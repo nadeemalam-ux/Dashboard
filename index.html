@@ -1,26 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AC Results Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Jan Suraaj AC Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
-<h1>AC Results Dashboard</h1>
+<div class="container">
 
-<select id="zone">
-  <option value="">Select Zone</option>
-</select>
+    <div class="header">
+        <h1>📊 Jan Suraaj AC Dashboard</h1>
+        <p>Bihar Assembly Election Data Portal</p>
+    </div>
 
-<select id="ls">
-  <option value="">Select Lok Sabha</option>
-</select>
+    <div class="filters-card">
 
-<select id="assembly">
-  <option value="">Select Assembly</option>
-</select>
+        <select id="zone">
+            <option value="">Select Zone</option>
+        </select>
 
-<div id="result"></div>
+        <select id="ls">
+            <option value="">Select Lok Sabha</option>
+        </select>
+
+        <select id="assembly">
+            <option value="">Select Assembly</option>
+        </select>
+
+    </div>
+
+    <div id="result" class="result-card">
+
+        <div class="welcome">
+            Select Zone, Lok Sabha and Assembly
+        </div>
+
+    </div>
+
+</div>
 
 <script src="script.js"></script>
 
