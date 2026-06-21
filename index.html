@@ -1,51 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Jan Suraaj AC Dashboard</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jan Suraaj Election Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <main class="dashboard-shell">
+        <section class="hero glass-panel">
+            <div>
+                <p class="eyebrow">Bihar Assembly Election Data Portal</p>
+                <h1>Jan Suraaj AC Dashboard</h1>
+                <p class="hero-copy">Compare leading candidates, vote share, margins, and constituency details across zones, Lok Sabha seats, and assemblies.</p>
+            </div>
+            <div class="hero-stats" aria-label="Dashboard summary">
+                <article>
+                    <span id="zoneCount">--</span>
+                    <p>Zones</p>
+                </article>
+                <article>
+                    <span id="lokSabhaCount">--</span>
+                    <p>Lok Sabha</p>
+                </article>
+                <article>
+                    <span id="assemblyCount">--</span>
+                    <p>Assemblies</p>
+                </article>
+            </div>
+        </section>
 
-<div class="container">
+        <section class="filters glass-panel" aria-label="Election filters">
+            <label>
+                <span>Zone</span>
+                <select id="zone">
+                    <option value="">Select Zone</option>
+                </select>
+            </label>
+            <label>
+                <span>Lok Sabha</span>
+                <select id="ls" disabled>
+                    <option value="">Select Lok Sabha</option>
+                </select>
+            </label>
+            <label>
+                <span>Assembly</span>
+                <select id="assembly" disabled>
+                    <option value="">Select Assembly</option>
+                </select>
+            </label>
+        </section>
 
-    <div class="header">
-        <h1>📊 Jan Suraaj AC Dashboard</h1>
-        <p>Bihar Assembly Election Data Portal</p>
-    </div>
+        <section id="result" class="result-card glass-panel" aria-live="polite">
+            <div class="loading-state">
+                <span class="loader" aria-hidden="true"></span>
+                <p>Loading election data...</p>
+            </div>
+        </section>
+    </main>
 
-    <div class="filters-card">
-
-        <select id="zone">
-            <option value="">Select Zone</option>
-        </select>
-
-        <select id="ls">
-            <option value="">Select Lok Sabha</option>
-        </select>
-
-        <select id="assembly">
-            <option value="">Select Assembly</option>
-        </select>
-
-    </div>
-
-    <div id="result" class="result-card">
-
-        <div class="welcome">
-            Select Zone, Lok Sabha and Assembly
-        </div>
-
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
