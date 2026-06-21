@@ -229,104 +229,73 @@ function parseCandidates(details = "") {
     });
 }
 
-function candidateTemplate(candidate) {
-    const candidateName = escapeHtml(candidate.name);
-    const partyClass = `party-${candidate.party.toLowerCase().replace(/[^a-z]/g, '')}`;
-    const votePercent = candidate.percent || 0;
-
-    return `
-        <article class="candidate-card">
-            <div class="candidate-topline">
-                <div>
-                    <p class="candidate-label">${escapeHtml(candidate.label)}</p>
-                    <h3 class="candidate-name">${candidateName}</h3>
-                    <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-                        <span class="party-badge ${partyClass}">${escapeHtml(candidate.party)}</span>
-                        <span class="caste-badge">Caste: ${escapeHtml(candidate.caste)}</span>
-                    </div>
-                </div>
-                <div class="vote-count">
-                    ${formatter.format(candidate.votes)}
-                    <span>votes</span>
-                </div>
-            </div>
-            <div class="vote-bar" aria-label="${candidateName} vote share">
-                <div class="vote-fill ${candidate.type}" style="width: ${votePercent}%"></div>
-            </div>
-            <div class="vote-share">
-                <span>${votePercent.toFixed(1)}% share</span>
-            </div>
-        </article>
-    `;
-}
-
 function renderSingleAssembly(row) {
-    const totalVotes = row.totalVotes || 1;
     const margin = row.margin;
     
-    const winnerPercent = totalVotes ? (row.winner.votes / totalVotes) * 100 : 0;
-    const runnerPercent = totalVotes ? (row.runner.votes / totalVotes) * 100 : 0;
+    // Sort candidates by votes descending and rank them
+    const sortedCandidates = [...row.candidates].sort((a, b) => b.votes - a.votes);
+    
+    // Calculate total votes and max votes for comparable bars
+    const totalVotes = sortedCandidates.reduce((sum, c) => sum + c.votes, 0) || 1;
+    const maxVotes = Math.max(...sortedCandidates.map(c => c.votes)) || 1;
 
-    const mainCandidates = [];
-    if (row.winner) {
-        mainCandidates.push({
-            ...row.winner,
-            percent: winnerPercent,
-            type: "winner"
-        });
-    }
-    if (row.runner) {
-        mainCandidates.push({
-            ...row.runner,
-            percent: runnerPercent,
-            type: "runner"
-        });
-    }
+    const standingRows = sortedCandidates.map((c, index) => {
+        const rank = index + 1;
+        const barWidth = (c.votes / maxVotes) * 100;
+        const voteShare = (c.votes / totalVotes) * 100;
+        const partyClass = `party-${c.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+        
+        let fillClass = 'other';
+        if (rank === 1) fillClass = 'winner';
+        else if (rank === 2) fillClass = 'runner';
 
-    const otherCandidates = row.candidates.filter(c => c.label !== 'Winner' && c.label !== 'Runner Up');
-
-    let otherHtml = '';
-    if (otherCandidates.length > 0) {
-        otherHtml = `
-            <div class="details-panel" style="margin-top: 18px;">
-                <h3 style="margin-bottom: 12px; font-weight: 700; color: #f8fafc;">Other Candidates</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-                    ${otherCandidates.map(c => {
-                        const partyCls = `party-${c.party.toLowerCase().replace(/[^a-z]/g, '')}`;
-                        return `
-                            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; transition: transform 0.2s ease;">
-                                <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted);">${escapeHtml(c.label)}</p>
-                                <h4 style="font-size: 15px; margin: 4px 0; font-weight: 800; color: #fff;">${escapeHtml(c.name)}</h4>
-                                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px 0;">
-                                    <span class="party-badge ${partyCls}">${escapeHtml(c.party)}</span>
-                                    <span class="caste-badge">Caste: ${escapeHtml(c.caste)}</span>
-                                </div>
-                                <p style="font-size: 13px; font-weight: 700; color: #fff7ed;">${formatter.format(c.votes)} votes</p>
-                            </div>
-                        `;
-                    }).join('')}
+        return `
+            <div class="standing-row rank-${rank}">
+                <div class="standing-rank">${rank}</div>
+                <div class="standing-info">
+                    <div class="standing-name-row">
+                        <span class="standing-name">${escapeHtml(c.name)}</span>
+                        <span class="party-badge ${partyClass}">${escapeHtml(c.party)}</span>
+                        <span class="caste-badge">Caste: ${escapeHtml(c.caste)}</span>
+                    </div>
+                </div>
+                <div class="standing-votes">
+                    ${formatter.format(c.votes)}
+                    <span>${voteShare.toFixed(1)}% share</span>
+                </div>
+                <div class="standing-bar-container">
+                    <div class="standing-bar">
+                        <div class="standing-fill ${fillClass}" style="width: ${barWidth}%"></div>
+                    </div>
                 </div>
             </div>
         `;
-    }
+    }).join('');
 
     elements.result.innerHTML = `
         <div class="result-header">
             <div>
-                <p style="text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; color: var(--muted); font-weight: 700;">${escapeHtml(row.zone)} Zone / ${escapeHtml(row.loksabha)} Lok Sabha</p>
-                <h2 style="margin-top: 4px;">${escapeHtml(row.assembly)}</h2>
+                <p style="text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; color: var(--muted); font-weight: 700;">
+                    ${escapeHtml(row.zone)} Zone / ${escapeHtml(row.loksabha)} Lok Sabha
+                </p>
+                <h2 style="margin-top: 4px; font-size: clamp(20px, 3vw, 26px);">${escapeHtml(row.assembly)}</h2>
             </div>
             <div class="margin-pill">Margin: ${formatter.format(margin)} votes</div>
         </div>
         
-        <div class="comparison-grid">
-            ${mainCandidates.map(candidateTemplate).join("")}
+        <div class="details-panel" style="margin-top: 0;">
+            <h3 style="margin-bottom: 14px; font-weight: 700; color: #f8fafc; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+                Candidate Standings & Vote Share
+            </h3>
+            <div class="standings-list">
+                ${standingRows}
+            </div>
         </div>
-
-        ${otherHtml}
         
-        <div class="details-panel">
-            <h3 style="margin-bottom: 12px; font-weight: 700;">Constituency Notes</h3>
+        <div class="details-panel" style="margin-top: 18px;">
+            <h3 style="margin-bottom: 10px; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+                Constituency Notes & Details
+            </h3>
             <pre>${escapeHtml(row.details)}</pre>
         </div>
     `;
