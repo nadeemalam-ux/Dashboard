@@ -1,17 +1,131 @@
-body {
-  font-family: Arial;
-  padding: 20px;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
-select {
-  width: 300px;
-  padding: 10px;
-  margin: 10px;
+body{
+font-family:Poppins,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+min-height:100vh;
+padding:20px;
 }
 
-#result {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  white-space: pre-wrap;
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+.header{
+text-align:center;
+margin-bottom:25px;
+color:white;
+}
+
+.header h1{
+font-size:38px;
+margin-bottom:8px;
+}
+
+.header p{
+color:#cbd5e1;
+}
+
+.filters-card{
+background:white;
+padding:25px;
+border-radius:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+select{
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:15px;
+}
+
+.result-card{
+margin-top:25px;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+.welcome{
+text-align:center;
+color:#64748b;
+padding:50px;
+}
+
+.ac-title{
+font-size:28px;
+font-weight:700;
+margin-bottom:25px;
+}
+
+.candidate{
+margin-bottom:25px;
+}
+
+.candidate-name{
+font-size:16px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.vote-text{
+margin-bottom:8px;
+color:#64748b;
+}
+
+.vote-bar{
+width:100%;
+height:28px;
+background:#e2e8f0;
+border-radius:30px;
+overflow:hidden;
+}
+
+.vote-fill{
+height:100%;
+display:flex;
+align-items:center;
+justify-content:flex-end;
+padding-right:12px;
+font-size:12px;
+font-weight:600;
+color:white;
+}
+
+.winner{
+background:#22c55e;
+}
+
+.runner{
+background:#3b82f6;
+}
+
+.details{
+margin-top:25px;
+padding-top:20px;
+border-top:1px solid #ddd;
+line-height:1.8;
+white-space:pre-wrap;
+}
+
+@media(max-width:768px){
+
+.header h1{
+font-size:28px;
+}
+
+.result-card{
+padding:20px;
+}
+
 }
