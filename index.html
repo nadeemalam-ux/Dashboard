@@ -34,24 +34,41 @@
         </section>
 
         <section class="filters glass-panel" aria-label="Election filters">
-            <label>
-                <span>Zone</span>
-                <select id="zone">
-                    <option value="">Select Zone</option>
-                </select>
-            </label>
-            <label>
-                <span>Lok Sabha</span>
-                <select id="ls" disabled>
-                    <option value="">Select Lok Sabha</option>
-                </select>
-            </label>
-            <label>
-                <span>Assembly</span>
-                <select id="assembly" disabled>
-                    <option value="">Select Assembly</option>
-                </select>
-            </label>
+            <div class="filters-row">
+                <label>
+                    <span>Zone</span>
+                    <select id="zone">
+                        <option value="">Select Zone</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Lok Sabha</span>
+                    <select id="ls" disabled>
+                        <option value="">Select Lok Sabha</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Assembly</span>
+                    <select id="assembly" disabled>
+                        <option value="">Select Assembly</option>
+                    </select>
+                </label>
+            </div>
+            <div class="search-row">
+                <label class="search-field">
+                    <span>Search Constituencies</span>
+                    <input type="text" id="search" placeholder="Search by name, candidate, party, or caste...">
+                </label>
+                <label class="sort-field">
+                    <span>Sort By</span>
+                    <select id="sortBy">
+                        <option value="name">Constituency Name (A-Z)</option>
+                        <option value="margin-desc">Highest Margin</option>
+                        <option value="margin-asc">Lowest Margin</option>
+                        <option value="votes-desc">Highest Total Votes</option>
+                    </select>
+                </label>
+            </div>
         </section>
 
         <section id="result" class="result-card glass-panel" aria-live="polite">

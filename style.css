@@ -114,9 +114,21 @@ h1 {
 
 .filters {
     border-radius: 22px;
-    padding: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.filters-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
     gap: 14px;
 }
 
@@ -131,7 +143,7 @@ label span {
     font-weight: 700;
 }
 
-select {
+select, input[type="text"] {
     width: 100%;
     min-height: 52px;
     border: 1px solid var(--border);
@@ -145,7 +157,7 @@ select {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-select:focus {
+select:focus, input[type="text"]:focus {
     border-color: #fde68a;
     box-shadow: 0 0 0 4px rgba(253, 230, 138, 0.24);
 }
@@ -334,7 +346,8 @@ select:disabled {
     }
 
     .hero,
-    .filters,
+    .filters-row,
+    .search-row,
     .comparison-grid {
         grid-template-columns: 1fr;
     }
@@ -370,5 +383,224 @@ select:disabled {
     .margin-pill {
         width: 100%;
         text-align: center;
+    }
+}
+
+/* --- Added Premium styles for Table and Badges --- */
+
+.constituency-table-wrapper {
+    overflow-x: auto;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    margin-top: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    backdrop-filter: blur(10px);
+}
+
+.constituency-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+.constituency-table th,
+.constituency-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    vertical-align: middle;
+}
+
+.constituency-table th {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    position: sticky;
+    top: 0;
+}
+
+.constituency-table tbody tr {
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.constituency-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.constituency-table tbody tr:active {
+    transform: scale(0.995);
+}
+
+.constituency-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Party Badge */
+.party-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Caste Badge */
+.caste-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-left: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Highlighted castes style */
+.candidate-caste-highlight {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fef08a; /* Soft amber/yellow */
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.caste-highlight-container {
+    margin-top: 8px;
+}
+
+/* Candidate hover card transition */
+.candidate-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.candidate-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Details pre styling */
+.details-panel pre {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* List results header */
+.list-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.list-results-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.list-results-header .count-pill {
+    background: var(--surface-strong);
+    color: #fff7ed;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    border: 1px solid var(--border);
+}
+
+/* Party Specific Colors */
+.party-bjp { background-color: #ff9933; border-color: rgba(255,255,255,0.2); }
+.party-rjd { background-color: #16a34a; border-color: rgba(255,255,255,0.2); } /* RJD green */
+.party-jdu { background-color: #0f766e; border-color: rgba(255,255,255,0.2); } /* JDU teal */
+.party-inc { background-color: #2563eb; border-color: rgba(255,255,255,0.2); } /* INC Blue */
+.party-aimim { background-color: #4c1d95; border-color: rgba(255,255,255,0.2); }
+.party-jsp { background-color: #eab308; color: #0f172a; border-color: rgba(0,0,0,0.1); } /* JSP Yellow */
+.party-ljpr { background-color: #e11d48; border-color: rgba(255,255,255,0.2); } /* LJP-R Red */
+.party-ljp { background-color: #be123c; border-color: rgba(255,255,255,0.2); }
+.party-ham { background-color: #a21caf; border-color: rgba(255,255,255,0.2); }
+.party-cpiml { background-color: #dc2626; border-color: rgba(255,255,255,0.2); }
+.party-rlm { background-color: #4f46e5; border-color: rgba(255,255,255,0.2); }
+.party-vsip { background-color: #0891b2; border-color: rgba(255,255,255,0.2); }
+.party-bsp { background-color: #1d4ed8; border-color: rgba(255,255,255,0.2); }
+.party-ind { background-color: #4b5563; border-color: rgba(255,255,255,0.2); }
+
+/* Custom badges */
+.candidate-party-badge {
+    margin-right: 6px;
+}
+
+/* Mini margin bar */
+.mini-margin-bar {
+    width: 100px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.mini-margin-fill {
+    height: 100%;
+    background: #fde68a;
+    border-radius: inherit;
+}
+
+/* Card details for mobile layout of table rows */
+@media (max-width: 768px) {
+    .constituency-table th {
+        display: none;
+    }
+    .constituency-table, .constituency-table tbody, .constituency-table tr, .constituency-table td {
+        display: block;
+        width: 100%;
+    }
+    .constituency-table tr {
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 10px;
+    }
+    .constituency-table td {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .constituency-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 10px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 4px;
+    }
+    .constituency-table td:last-child {
+        border-bottom: none;
     }
 }

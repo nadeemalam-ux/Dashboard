@@ -9,6 +9,8 @@ const elements = {
     zone: document.getElementById("zone"),
     lokSabha: document.getElementById("ls"),
     assembly: document.getElementById("assembly"),
+    search: document.getElementById("search"),
+    sortBy: document.getElementById("sortBy"),
     result: document.getElementById("result"),
     zoneCount: document.getElementById("zoneCount"),
     lokSabhaCount: document.getElementById("lokSabhaCount"),
@@ -35,6 +37,10 @@ function escapeHtml(value = "") {
     });
 }
 
+function escapeJsString(str = "") {
+    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
 function fillSelect(select, values, placeholder) {
     select.innerHTML = `<option value="">${placeholder}</option>`;
     values.forEach((value) => {
@@ -49,16 +55,7 @@ function setLoading() {
     elements.result.innerHTML = `
         <div class="loading-state">
             <span class="loader" aria-hidden="true"></span>
-            <p>Loading election data...</p>
-        </div>
-    `;
-}
-
-function setEmptyState() {
-    elements.result.innerHTML = `
-        <div class="empty-state">
-            <strong>Select a constituency</strong>
-            <p>Choose Zone, Lok Sabha, and Assembly to compare the leading vote shares.</p>
+            <p>Loading Bihar election data...</p>
         </div>
     `;
 }
@@ -78,29 +75,164 @@ function updateSummary(data) {
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
 }
 
-function parseDetails(details = "") {
-    const lines = details
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean);
+function parseCandidates(details = "") {
+    // Pre-split inline declarations (e.g. Winner... Runner Up...)
+    const cleanDetails = details.replace(/(?<!^)\b(MLA|Runner Up|\d+(?:st|nd|rd|th)\s+Runner\s+Up)\b/gi, '\n$1');
+    const lines = cleanDetails.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    const candidates = [];
+    let current = null;
 
-    const winner = (details.match(/MLA-\s*(.*)/i) || ["", "Winner"])[1].trim();
-    const runner = (details.match(/Runner Up-\s*(.*)/i) || ["", "Runner Up"])[1].trim();
-    const votes = details.match(/Votes-\s*([\d,]+)/gi) || [];
-    const winnerVotes = votes[0] ? Number(votes[0].replace(/\D/g, "")) : 0;
-    const runnerVotes = votes[1] ? Number(votes[1].replace(/\D/g, "")) : 0;
-
-    return {
-        winner,
-        runner,
-        winnerVotes,
-        runnerVotes,
-        lines,
+    const isHeader = (line) => {
+        const lower = line.toLowerCase();
+        return lower.startsWith('mla') || lower.includes('runner up') || /^\d+(st|nd|rd|th)\s+runner\s+up/i.test(line);
     };
+
+    const getLabel = (line) => {
+        const match = line.match(/^(mla|runner up|\d+(?:st|nd|rd|th)\s+runner\s+up)/i);
+        if (match) {
+            const lbl = match[1].trim();
+            return lbl.toLowerCase() === 'mla' ? 'Winner' : lbl;
+        }
+        return null;
+    };
+
+    for (const line of lines) {
+        if (isHeader(line)) {
+            if (current) candidates.push(current);
+            current = {
+                label: getLabel(line),
+                raw: [line],
+                name: '',
+                party: '',
+                caste: '',
+                votes: 0
+            };
+        } else if (current) {
+            current.raw.push(line);
+        }
+    }
+    if (current) candidates.push(current);
+
+    const knownParties = ['rjd', 'jdu', 'bjp', 'jsp', 'inc', 'aimim', 'ind', 'vip', 'ham', 'cpi-ml', 'rlm', 'vsip', 'bsp', 'ppi', 'ljp-r', 'ljp', 'janata dal (united)', 'rashtriya janata dal', 'bharatiya janata party', 'jan suraaj party', 'indian national congress', 'independent'];
+    const partyAliases = {
+        'jsp0': 'JSP',
+        'ind.': 'IND',
+        'ind': 'IND',
+        'independent': 'IND',
+        'janata dal (united)': 'JDU',
+        'rashtriya janata dal': 'RJD',
+        'bharatiya janata party': 'BJP',
+        'jan suraaj party': 'JSP',
+        'indian national congress': 'INC'
+    };
+
+    return candidates.map(cand => {
+        let text = cand.raw.join(' ');
+        
+        // Remove label
+        text = text.replace(/^(mla|runner up|\d+(?:st|nd|rd|th)\s+runner\s+up)\s*[-–—:]?\s*/i, '').trim();
+
+        // Extract Votes
+        let votes = 0;
+        const votesMatch = text.match(/votes\s*[-–—:]?\s*([\d,\+]+)/i);
+        if (votesMatch) {
+            const digits = votesMatch[1].replace(/\D/g, '');
+            votes = parseInt(digits, 10) || 0;
+            text = text.replace(/votes\s*[-–—:]?\s*([\d,\+]+)/i, '').trim();
+        }
+
+        // Extract Caste if "Caste - Koiri"
+        let caste = '';
+        const casteMatch = text.match(/caste\s*[-–—:]?\s*([a-zA-Z\s]+)/i);
+        if (casteMatch) {
+            caste = casteMatch[1].trim();
+            text = text.replace(/caste\s*[-–—:]?\s*[a-zA-Z\s]+/i, '').trim();
+        }
+
+        text = text.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim();
+
+        // Extract parenthesized contents
+        const parens = [];
+        const parenRegex = /\(([^)]+)\)/g;
+        let pMatch;
+        while ((pMatch = parenRegex.exec(text)) !== null) {
+            parens.push(pMatch[1].trim());
+        }
+
+        let nameOnly = text.replace(/\([^)]+\)/g, ' ').replace(/\s+/g, ' ').trim();
+
+        let party = '';
+        parens.forEach(content => {
+            const lower = content.toLowerCase();
+            if (knownParties.includes(lower) || partyAliases[lower]) {
+                party = partyAliases[lower] || content.toUpperCase();
+            } else if (!caste) {
+                caste = content;
+            }
+        });
+
+        // Fallbacks for party
+        if (!party) {
+            for (const p of knownParties) {
+                const regex = new RegExp(`\\b${p}\\b$`, 'i');
+                if (regex.test(nameOnly)) {
+                    party = partyAliases[p.toLowerCase()] || p.toUpperCase();
+                    nameOnly = nameOnly.replace(regex, '').trim();
+                    break;
+                }
+            }
+        }
+
+        if (!party) {
+            for (const p of ['IND', 'RJD', 'JDU', 'BJP', 'JSP', 'INC', 'AIMIM', 'VIP', 'HAM', 'BSP', 'RLM', 'LJP-R', 'LJP']) {
+                if (nameOnly.endsWith(p)) {
+                    party = p;
+                    nameOnly = nameOnly.substring(0, nameOnly.length - p.length).trim();
+                    break;
+                }
+            }
+        }
+
+        if (party && partyAliases[party.toLowerCase()]) {
+            party = partyAliases[party.toLowerCase()];
+        }
+
+        // Fallback for caste scan in text
+        if (!caste) {
+            const commonCastes = ['yadav', 'kurmi', 'dhanuk', 'bhumihar', 'minority', 'koiri', 'rajput', 'baniya', 'brahmin', 'bramhim', 'dusadh', 'pasi', 'teli', 'sonar', 'dhobi', 'mallah', 'kevrat', 'gangota', 'kushwaha', 'rajwar', 'tanti', 'bind', 'dangi', 'chamar', 'beldar'];
+            for (const c of commonCastes) {
+                const regex = new RegExp(`\\b${c}\\b`, 'i');
+                if (regex.test(text)) {
+                    caste = c.charAt(0).toUpperCase() + c.slice(1);
+                    nameOnly = nameOnly.replace(regex, '').trim();
+                    break;
+                }
+            }
+        }
+
+        let name = nameOnly.replace(/^[-\s,]+|[-\s,]+$/g, '').trim();
+        if (name === name.toLowerCase()) {
+            name = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        if (caste) {
+            caste = caste.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        return {
+            label: cand.label,
+            name: name || 'Unknown Candidate',
+            party: party || 'IND',
+            caste: caste || 'N/A',
+            votes: votes
+        };
+    });
 }
 
 function candidateTemplate(candidate) {
     const candidateName = escapeHtml(candidate.name);
+    const partyClass = `party-${candidate.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+    const votePercent = candidate.percent || 0;
 
     return `
         <article class="candidate-card">
@@ -108,63 +240,257 @@ function candidateTemplate(candidate) {
                 <div>
                     <p class="candidate-label">${escapeHtml(candidate.label)}</p>
                     <h3 class="candidate-name">${candidateName}</h3>
+                    <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                        <span class="party-badge ${partyClass}">${escapeHtml(candidate.party)}</span>
+                        <span class="caste-badge">Caste: ${escapeHtml(candidate.caste)}</span>
+                    </div>
                 </div>
-                <p class="vote-count">
+                <div class="vote-count">
                     ${formatter.format(candidate.votes)}
                     <span>votes</span>
-                </p>
+                </div>
             </div>
             <div class="vote-bar" aria-label="${candidateName} vote share">
-                <div class="vote-fill ${candidate.type}" style="width: ${candidate.percent}%"></div>
+                <div class="vote-fill ${candidate.type}" style="width: ${votePercent}%"></div>
             </div>
             <div class="vote-share">
-                <span>${candidate.percent.toFixed(1)}% share</span>
-                <span>${formatter.format(candidate.votes)} votes</span>
+                <span>${votePercent.toFixed(1)}% share</span>
             </div>
         </article>
     `;
 }
 
-function renderAssembly(row) {
-    const details = parseDetails(row.details);
-    const totalVotes = details.winnerVotes + details.runnerVotes;
-    const margin = Math.abs(details.winnerVotes - details.runnerVotes);
-    const winnerPercent = totalVotes ? (details.winnerVotes / totalVotes) * 100 : 0;
-    const runnerPercent = totalVotes ? (details.runnerVotes / totalVotes) * 100 : 0;
+function renderSingleAssembly(row) {
+    const totalVotes = row.totalVotes || 1;
+    const margin = row.margin;
+    
+    const winnerPercent = totalVotes ? (row.winner.votes / totalVotes) * 100 : 0;
+    const runnerPercent = totalVotes ? (row.runner.votes / totalVotes) * 100 : 0;
 
-    const candidates = [
-        {
-            label: "Leading candidate",
-            name: details.winner,
-            votes: details.winnerVotes,
+    const mainCandidates = [];
+    if (row.winner) {
+        mainCandidates.push({
+            ...row.winner,
             percent: winnerPercent,
-            type: "winner",
-        },
-        {
-            label: "Runner up",
-            name: details.runner,
-            votes: details.runnerVotes,
+            type: "winner"
+        });
+    }
+    if (row.runner) {
+        mainCandidates.push({
+            ...row.runner,
             percent: runnerPercent,
-            type: "runner",
-        },
-    ];
+            type: "runner"
+        });
+    }
+
+    const otherCandidates = row.candidates.filter(c => c.label !== 'Winner' && c.label !== 'Runner Up');
+
+    let otherHtml = '';
+    if (otherCandidates.length > 0) {
+        otherHtml = `
+            <div class="details-panel" style="margin-top: 18px;">
+                <h3 style="margin-bottom: 12px; font-weight: 700; color: #f8fafc;">Other Candidates</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                    ${otherCandidates.map(c => {
+                        const partyCls = `party-${c.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+                        return `
+                            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; transition: transform 0.2s ease;">
+                                <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted);">${escapeHtml(c.label)}</p>
+                                <h4 style="font-size: 15px; margin: 4px 0; font-weight: 800; color: #fff;">${escapeHtml(c.name)}</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px 0;">
+                                    <span class="party-badge ${partyCls}">${escapeHtml(c.party)}</span>
+                                    <span class="caste-badge">Caste: ${escapeHtml(c.caste)}</span>
+                                </div>
+                                <p style="font-size: 13px; font-weight: 700; color: #fff7ed;">${formatter.format(c.votes)} votes</p>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
 
     elements.result.innerHTML = `
         <div class="result-header">
             <div>
-                <p>${escapeHtml(row.zone)} / ${escapeHtml(row.loksabha)}</p>
-                <h2>${escapeHtml(row.assembly)}</h2>
+                <p style="text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; color: var(--muted); font-weight: 700;">${escapeHtml(row.zone)} Zone / ${escapeHtml(row.loksabha)} Lok Sabha</p>
+                <h2 style="margin-top: 4px;">${escapeHtml(row.assembly)}</h2>
             </div>
             <div class="margin-pill">Margin: ${formatter.format(margin)} votes</div>
         </div>
+        
         <div class="comparison-grid">
-            ${candidates.map(candidateTemplate).join("")}
+            ${mainCandidates.map(candidateTemplate).join("")}
         </div>
+
+        ${otherHtml}
+        
         <div class="details-panel">
-            <h3>Constituency Notes</h3>
-            <pre>${escapeHtml(details.lines.join("\n"))}</pre>
+            <h3 style="margin-bottom: 12px; font-weight: 700;">Constituency Notes</h3>
+            <pre>${escapeHtml(row.details)}</pre>
         </div>
     `;
+}
+
+function renderConstituenciesList(list) {
+    if (list.length === 0) {
+        elements.result.innerHTML = `
+            <div class="empty-state">
+                <strong>No matching constituencies found</strong>
+                <p>Try refining your search query or dropdown filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const maxMargin = Math.max(...list.map(r => r.margin)) || 1;
+
+    const tableRows = list.map(row => {
+        const winnerName = row.winner ? row.winner.name : 'N/A';
+        const winnerParty = row.winner ? row.winner.party : 'IND';
+        const winnerCaste = row.winner ? row.winner.caste : 'N/A';
+        const winnerPartyClass = `party-${winnerParty.toLowerCase().replace(/[^a-z]/g, '')}`;
+
+        const runnerName = row.runner ? row.runner.name : 'N/A';
+        const runnerParty = row.runner ? row.runner.party : 'IND';
+        const runnerCaste = row.runner ? row.runner.caste : 'N/A';
+        const runnerPartyClass = `party-${runnerParty.toLowerCase().replace(/[^a-z]/g, '')}`;
+
+        const marginPct = (row.margin / maxMargin) * 100;
+
+        return `
+            <tr onclick="selectConstituency('${escapeJsString(row.zone)}', '${escapeJsString(row.loksabha)}', '${escapeJsString(row.assembly)}')" class="constituency-row">
+                <td data-label="Constituency">
+                    <strong style="font-size: 15px; color: #fff;">${escapeHtml(row.assembly)}</strong>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${escapeHtml(row.zone)} / ${escapeHtml(row.loksabha)}</div>
+                </td>
+                <td data-label="Winner">
+                    <div>
+                        <span class="party-badge ${winnerPartyClass}" style="padding: 2px 6px; font-size: 10px; margin-right: 4px;">${escapeHtml(winnerParty)}</span>
+                        <strong>${escapeHtml(winnerName)}</strong>
+                    </div>
+                    <div style="margin-top: 4px;">
+                        <span class="caste-badge" style="margin-left: 0;">Caste: ${escapeHtml(winnerCaste)}</span>
+                    </div>
+                </td>
+                <td data-label="Runner Up">
+                    <div>
+                        <span class="party-badge ${runnerPartyClass}" style="padding: 2px 6px; font-size: 10px; margin-right: 4px;">${escapeHtml(runnerParty)}</span>
+                        <strong>${escapeHtml(runnerName)}</strong>
+                    </div>
+                    <div style="margin-top: 4px;">
+                        <span class="caste-badge" style="margin-left: 0;">Caste: ${escapeHtml(runnerCaste)}</span>
+                    </div>
+                </td>
+                <td data-label="Margin">
+                    <strong>${formatter.format(row.margin)}</strong>
+                    <div class="mini-margin-bar">
+                        <div class="mini-margin-fill" style="width: ${marginPct}%"></div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    elements.result.innerHTML = `
+        <div class="list-results-header">
+            <h3>Constituencies</h3>
+            <span class="count-pill">${list.length} seats</span>
+        </div>
+        <div class="constituency-table-wrapper">
+            <table class="constituency-table">
+                <thead>
+                    <tr>
+                        <th>Constituency</th>
+                        <th>Winner (Leading Candidate)</th>
+                        <th>Runner Up</th>
+                        <th>Margin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+window.selectConstituency = function(zone, loksabha, assembly) {
+    elements.zone.value = zone;
+    
+    const lokSabhaValues = uniqueValues(
+        state.data.filter((item) => item.zone === zone),
+        "loksabha"
+    );
+    fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
+    elements.lokSabha.disabled = false;
+    elements.lokSabha.value = loksabha;
+
+    const assemblyValues = uniqueValues(
+        state.data.filter((item) => item.zone === zone && item.loksabha === loksabha),
+        "assembly"
+    );
+    fillSelect(elements.assembly, assemblyValues, "Select Assembly");
+    elements.assembly.disabled = false;
+    elements.assembly.value = assembly;
+
+    renderDashboard();
+};
+
+function renderDashboard() {
+    const selectedZone = elements.zone.value;
+    const selectedLS = elements.lokSabha.value;
+    const selectedAssembly = elements.assembly.value;
+    const searchQuery = elements.search.value.toLowerCase().trim();
+    const sortVal = elements.sortBy.value;
+
+    let filteredData = state.data;
+    
+    if (selectedZone) {
+        filteredData = filteredData.filter(item => item.zone === selectedZone);
+    }
+    if (selectedLS) {
+        filteredData = filteredData.filter(item => item.loksabha === selectedLS);
+    }
+
+    if (selectedAssembly) {
+        const row = state.data.find(
+            item => item.zone === selectedZone && item.loksabha === selectedLS && item.assembly === selectedAssembly
+        );
+        if (row) {
+            renderSingleAssembly(row);
+            updateSummary(filteredData);
+            return;
+        }
+    }
+
+    if (searchQuery) {
+        filteredData = filteredData.filter(row => {
+            const matchName = row.assembly.toLowerCase().includes(searchQuery);
+            const matchZone = row.zone.toLowerCase().includes(searchQuery);
+            const matchLS = row.loksabha.toLowerCase().includes(searchQuery);
+            
+            const matchCandidates = row.candidates.some(c => 
+                c.name.toLowerCase().includes(searchQuery) ||
+                c.party.toLowerCase().includes(searchQuery) ||
+                c.caste.toLowerCase().includes(searchQuery)
+            );
+            return matchName || matchZone || matchLS || matchCandidates;
+        });
+    }
+
+    if (sortVal === 'name') {
+        filteredData.sort((a, b) => a.assembly.localeCompare(b.assembly));
+    } else if (sortVal === 'margin-desc') {
+        filteredData.sort((a, b) => b.margin - a.margin);
+    } else if (sortVal === 'margin-asc') {
+        filteredData.sort((a, b) => a.margin - b.margin);
+    } else if (sortVal === 'votes-desc') {
+        filteredData.sort((a, b) => b.totalVotes - a.totalVotes);
+    }
+
+    renderConstituenciesList(filteredData);
+    updateSummary(filteredData);
 }
 
 function resetSelect(select, placeholder) {
@@ -176,63 +502,36 @@ function handleZoneChange() {
     const zone = elements.zone.value;
     resetSelect(elements.lokSabha, "Select Lok Sabha");
     resetSelect(elements.assembly, "Select Assembly");
-    setEmptyState();
-
-    if (!zone) {
-        return;
+    
+    if (zone) {
+        const lokSabhaValues = uniqueValues(
+            state.data.filter((item) => item.zone === zone),
+            "loksabha"
+        );
+        fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
+        elements.lokSabha.disabled = false;
     }
-
-    const lokSabhaValues = uniqueValues(
-        state.data.filter((item) => item.zone === zone),
-        "loksabha"
-    );
-
-    fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
-    elements.lokSabha.disabled = false;
+    renderDashboard();
 }
 
 function handleLokSabhaChange() {
     const zone = elements.zone.value;
     const lokSabha = elements.lokSabha.value;
     resetSelect(elements.assembly, "Select Assembly");
-    setEmptyState();
 
-    if (!zone || !lokSabha) {
-        return;
+    if (zone && lokSabha) {
+        const assemblyValues = uniqueValues(
+            state.data.filter((item) => item.zone === zone && item.loksabha === lokSabha),
+            "assembly"
+        );
+        fillSelect(elements.assembly, assemblyValues, "Select Assembly");
+        elements.assembly.disabled = false;
     }
-
-    const assemblyValues = uniqueValues(
-        state.data.filter((item) => item.zone === zone && item.loksabha === lokSabha),
-        "assembly"
-    );
-
-    fillSelect(elements.assembly, assemblyValues, "Select Assembly");
-    elements.assembly.disabled = false;
+    renderDashboard();
 }
 
 function handleAssemblyChange() {
-    const zone = elements.zone.value;
-    const lokSabha = elements.lokSabha.value;
-    const assembly = elements.assembly.value;
-
-    if (!assembly) {
-        setEmptyState();
-        return;
-    }
-
-    const row = state.data.find(
-        (item) =>
-            item.zone === zone &&
-            item.loksabha === lokSabha &&
-            item.assembly === assembly
-    );
-
-    if (!row) {
-        setErrorState("No matching constituency data was found.");
-        return;
-    }
-
-    renderAssembly(row);
+    renderDashboard();
 }
 
 async function initDashboard() {
@@ -245,10 +544,30 @@ async function initDashboard() {
             throw new Error("The election API returned an error.");
         }
 
-        state.data = await response.json();
+        const rawData = await response.json();
+        
+        state.data = rawData.map(row => {
+            const candidates = parseCandidates(row.details);
+            const winner = candidates.find(c => c.label === 'Winner') || candidates[0] || null;
+            const runner = candidates.find(c => c.label === 'Runner Up') || candidates[1] || null;
+            
+            const winnerVotes = winner ? winner.votes : 0;
+            const runnerVotes = runner ? runner.votes : 0;
+            const margin = Math.abs(winnerVotes - runnerVotes);
+            const totalVotes = winnerVotes + runnerVotes;
+
+            return {
+                ...row,
+                candidates,
+                winner,
+                runner,
+                margin,
+                totalVotes
+            };
+        });
+
         fillSelect(elements.zone, uniqueValues(state.data, "zone"), "Select Zone");
-        updateSummary(state.data);
-        setEmptyState();
+        renderDashboard();
     } catch (error) {
         setErrorState(error.message || "Please check your connection and try again.");
     }
@@ -257,5 +576,7 @@ async function initDashboard() {
 elements.zone.addEventListener("change", handleZoneChange);
 elements.lokSabha.addEventListener("change", handleLokSabhaChange);
 elements.assembly.addEventListener("change", handleAssemblyChange);
+elements.search.addEventListener("input", renderDashboard);
+elements.sortBy.addEventListener("change", renderDashboard);
 
 initDashboard();
