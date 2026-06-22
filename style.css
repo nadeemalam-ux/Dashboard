@@ -650,6 +650,7 @@ select:disabled {
 .party-rjd { background-color: #16a34a; border-color: rgba(255,255,255,0.2); } 
 .party-jdu { background-color: #0f766e; border-color: rgba(255,255,255,0.2); } 
 .party-inc { background-color: #2563eb; border-color: rgba(255,255,255,0.2); } 
+.party-iip { background-color: #1e3a8a; border-color: rgba(255,255,255,0.2); } /* Indian Inclusive Party */
 .party-aimim { background-color: #4c1d95; border-color: rgba(255,255,255,0.2); }
 .party-jsp { background-color: #eab308; color: #0f172a; border-color: rgba(0,0,0,0.1); } 
 .party-ljpr { background-color: #e11d48; border-color: rgba(255,255,255,0.2); } /* LJP-R Red */
@@ -687,6 +688,7 @@ select:disabled {
 .mini-margin-fill.party-rjd { background: #16a34a; }
 .mini-margin-fill.party-jdu { background: #0f766e; }
 .mini-margin-fill.party-inc { background: #2563eb; }
+.mini-margin-fill.party-iip { background: #1e3a8a; }
 .mini-margin-fill.party-aimim { background: #4c1d95; }
 .mini-margin-fill.party-jsp { background: #eab308; }
 .mini-margin-fill.party-ljpr { background: #e11d48; }
@@ -847,6 +849,7 @@ select:disabled {
 .standing-fill.party-rjd { background: linear-gradient(90deg, #15803d, #16a34a); }
 .standing-fill.party-jdu { background: linear-gradient(90deg, #0d9488, #0f766e); }
 .standing-fill.party-inc { background: linear-gradient(90deg, #1d4ed8, #2563eb); }
+.standing-fill.party-iip { background: linear-gradient(90deg, #172554, #1e3a8a); }
 .standing-fill.party-aimim { background: linear-gradient(90deg, #5b21b6, #4c1d95); }
 .standing-fill.party-jsp { background: linear-gradient(90deg, #ca8a04, #eab308); }
 .standing-fill.party-ljpr { background: linear-gradient(90deg, #be123c, #e11d48); }
