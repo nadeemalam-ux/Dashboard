@@ -1,19 +1,19 @@
 :root {
-    --bg-start: #102033;
-    --bg-mid: #24516b;
-    --bg-end: #f3b04e;
-    --surface: rgba(255, 255, 255, 0.16);
-    --surface-strong: rgba(255, 255, 255, 0.24);
-    --surface-soft: rgba(255, 255, 255, 0.10);
-    --border: rgba(255, 255, 255, 0.24);
+    --bg-start: #080c14;
+    --bg-mid: #111827;
+    --bg-end: #1e293b;
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-strong: rgba(255, 255, 255, 0.08);
+    --surface-soft: rgba(255, 255, 255, 0.02);
+    --border: rgba(255, 255, 255, 0.08);
     --text: #f8fafc;
-    --muted: #cbd5e1;
-    --ink: #183044;
-    --winner: #22c55e;
-    --runner: #38bdf8;
-    --accent: #f59e0b;
-    --danger: #fb7185;
-    --shadow: 0 24px 70px rgba(4, 16, 31, 0.34);
+    --muted: #94a3b8;
+    --ink: #0f172a;
+    --winner: #10b981;
+    --runner: #3b82f6;
+    --accent: #fbbf24; /* Jan Suraaj yellow */
+    --danger: #ef4444;
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -27,8 +27,8 @@ body {
     font-family: Inter, Arial, sans-serif;
     color: var(--text);
     background:
-        radial-gradient(circle at 12% 15%, rgba(56, 189, 248, 0.34), transparent 28%),
-        radial-gradient(circle at 84% 18%, rgba(245, 158, 11, 0.28), transparent 24%),
+        radial-gradient(circle at 12% 15%, rgba(251, 191, 36, 0.15), transparent 28%),
+        radial-gradient(circle at 84% 18%, rgba(16, 185, 129, 0.10), transparent 24%),
         linear-gradient(135deg, var(--bg-start), var(--bg-mid) 48%, var(--bg-end));
     padding: 28px;
 }
@@ -158,8 +158,8 @@ select, input[type="text"] {
 }
 
 select:focus, input[type="text"]:focus {
-    border-color: #fde68a;
-    box-shadow: 0 0 0 4px rgba(253, 230, 138, 0.24);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.24);
 }
 
 select:disabled {
@@ -200,7 +200,7 @@ select:disabled {
     height: 54px;
     border-radius: 999px;
     border: 5px solid rgba(255, 255, 255, 0.22);
-    border-top-color: #fde68a;
+    border-top-color: var(--accent);
     animation: spin 0.85s linear infinite;
 }
 
@@ -567,9 +567,25 @@ select:disabled {
 
 .mini-margin-fill {
     height: 100%;
-    background: #fde68a;
+    background: var(--accent);
     border-radius: inherit;
 }
+
+/* Mini margin fill colors based on party */
+.mini-margin-fill.party-bjp { background: #ff9933; }
+.mini-margin-fill.party-rjd { background: #16a34a; }
+.mini-margin-fill.party-jdu { background: #0f766e; }
+.mini-margin-fill.party-inc { background: #2563eb; }
+.mini-margin-fill.party-aimim { background: #4c1d95; }
+.mini-margin-fill.party-jsp { background: #eab308; }
+.mini-margin-fill.party-ljpr { background: #e11d48; }
+.mini-margin-fill.party-ljp { background: #be123c; }
+.mini-margin-fill.party-ham { background: #a21caf; }
+.mini-margin-fill.party-cpiml { background: #dc2626; }
+.mini-margin-fill.party-rlm { background: #4f46e5; }
+.mini-margin-fill.party-vsip { background: #0891b2; }
+.mini-margin-fill.party-bsp { background: #1d4ed8; }
+.mini-margin-fill.party-ind { background: #4b5563; }
 
 /* Card details for mobile layout of table rows */
 @media (max-width: 768px) {
@@ -709,16 +725,21 @@ select:disabled {
     height: 100%;
     border-radius: inherit;
     transition: width 0.7s ease;
-}
-
-.standing-fill.winner {
-    background: linear-gradient(90deg, #16a34a, #22c55e);
-}
-
-.standing-fill.runner {
-    background: linear-gradient(90deg, #0284c7, #38bdf8);
-}
-
-.standing-fill.other {
     background: linear-gradient(90deg, #4b5563, #6b7280);
 }
+
+/* Progress Fill colors based on party */
+.standing-fill.party-bjp { background: linear-gradient(90deg, #ea580c, #ff9933); }
+.standing-fill.party-rjd { background: linear-gradient(90deg, #15803d, #16a34a); }
+.standing-fill.party-jdu { background: linear-gradient(90deg, #0d9488, #0f766e); }
+.standing-fill.party-inc { background: linear-gradient(90deg, #1d4ed8, #2563eb); }
+.standing-fill.party-aimim { background: linear-gradient(90deg, #5b21b6, #4c1d95); }
+.standing-fill.party-jsp { background: linear-gradient(90deg, #ca8a04, #eab308); }
+.standing-fill.party-ljpr { background: linear-gradient(90deg, #be123c, #e11d48); }
+.standing-fill.party-ljp { background: linear-gradient(90deg, #9f1239, #be123c); }
+.standing-fill.party-ham { background: linear-gradient(90deg, #86198f, #a21caf); }
+.standing-fill.party-cpiml { background: linear-gradient(90deg, #b91c1c, #dc2626); }
+.standing-fill.party-rlm { background: linear-gradient(90deg, #4338ca, #4f46e5); }
+.standing-fill.party-vsip { background: linear-gradient(90deg, #0e7490, #0891b2); }
+.standing-fill.party-bsp { background: linear-gradient(90deg, #1e40af, #1d4ed8); }
+.standing-fill.party-ind { background: linear-gradient(90deg, #374151, #4b5563); }

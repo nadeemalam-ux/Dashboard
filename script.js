@@ -265,7 +265,7 @@ function renderSingleAssembly(row) {
                 </div>
                 <div class="standing-bar-container">
                     <div class="standing-bar">
-                        <div class="standing-fill ${fillClass}" style="width: ${barWidth}%"></div>
+                        <div class="standing-fill ${partyClass}" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
             </div>
@@ -354,7 +354,7 @@ function renderConstituenciesList(list) {
                 <td data-label="Margin">
                     <strong>${formatter.format(row.margin)}</strong>
                     <div class="mini-margin-bar">
-                        <div class="mini-margin-fill" style="width: ${marginPct}%"></div>
+                        <div class="mini-margin-fill ${winnerPartyClass}" style="width: ${marginPct}%"></div>
                     </div>
                 </td>
             </tr>
