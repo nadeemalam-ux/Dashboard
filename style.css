@@ -28,8 +28,8 @@ body {
     font-family: 'Inter', Arial, sans-serif;
     color: var(--text);
     background:
-        radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.08), transparent 40%),
-        radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.05), transparent 40%),
+        radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.1), transparent 45%),
         linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
     background-attachment: fixed;
     padding: 28px;
@@ -45,13 +45,13 @@ body::before {
     width: 100vw;
     height: 100vh;
     background-image: url('pk_rally_background.png');
-    background-size: cover;
-    background-position: center;
+    background-size: 130%; /* CSS Crop */
+    background-position: center 30%; /* Focus on the center/top where he is sitting */
     background-repeat: no-repeat;
-    opacity: 0.05;
+    opacity: 0.03; /* Very low opacity */
     z-index: -1;
     pointer-events: none;
-    filter: grayscale(100%) contrast(120%) brightness(150%);
+    filter: sepia(30%) hue-rotate(-10deg) saturate(150%) contrast(120%) brightness(110%);
 }
 
 .dashboard-shell {
@@ -62,17 +62,17 @@ body::before {
 }
 
 .glass-panel {
-    background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+    background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
     border: 1px solid var(--border);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 2px solid rgba(251, 191, 36, 0.5); /* Yellow theme top border */
     box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .glass-panel:hover {
-    box-shadow: var(--shadow), var(--glow-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow), 0 0 25px rgba(251, 191, 36, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(251, 191, 36, 0.4);
 }
 
 .hero {
@@ -117,15 +117,17 @@ h1 {
 }
 
 .hero-stats article {
-    min-height: 100px;
+    min-height: 120px;
     border-radius: 18px;
-    padding: 16px;
+    padding: 12px;
     background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
     border: 1px solid rgba(255,255,255,0.08);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -133,33 +135,40 @@ h1 {
 .hero-stats article::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 2px;
+    top: 0; left: 0; width: 100%; height: 3px;
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 .hero-stats article:hover {
     transform: translateY(-4px);
-    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    background: linear-gradient(180deg, rgba(251,191,36,0.08) 0%, rgba(255,255,255,0.02) 100%);
+    box-shadow: 0 8px 24px rgba(251,191,36,0.15);
+    border-color: rgba(251, 191, 36, 0.3);
 }
 .hero-stats article:hover::before {
     opacity: 1;
 }
 .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: rgba(251, 191, 36, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.15);
     color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-bottom: 2px;
+}
+.stat-icon svg {
+    width: 18px;
+    height: 18px;
 }
 .stat-content {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .hero-stats span {
