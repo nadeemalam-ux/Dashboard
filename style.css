@@ -999,3 +999,77 @@ select:disabled {
     animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
 }
+
+
+/* --- Mobile View Improvements --- */
+@media (max-width: 768px) {
+    /* Hero Stats to 2-column grid instead of 1 huge column */
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    /* Make the last odd item span 2 columns if needed, or just let it flow */
+    .hero-stats article {
+        min-height: 90px !important;
+        padding: 10px !important;
+    }
+    .hero-stats span {
+        font-size: 20px !important;
+    }
+    .hero-stats p {
+        font-size: 11px !important;
+    }
+    .stat-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    .stat-icon svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    /* Filters to be compact */
+    .filters {
+        padding: 14px !important;
+        gap: 12px !important;
+    }
+    .filters-row {
+        gap: 10px !important;
+    }
+    
+    /* Result card padding */
+    .loksabha-result-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 14px !important;
+    }
+    .loksabha-result-card > div {
+        text-align: left !important;
+        width: 100% !important;
+    }
+    
+    /* Table optimizations */
+    .constituency-table th, .constituency-table td {
+        padding: 12px 14px !important;
+        font-size: 13px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-stats {
+        /* On very small phones, even 2 columns might be tight, but it's better than 1 */
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .tally-legend-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+    .tally-legend-item {
+        padding: 8px !important;
+    }
+    .tally-legend-item .party-badge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+}
