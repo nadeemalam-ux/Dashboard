@@ -1,6 +1,7 @@
 const API =
     "https://script.google.com/macros/s/AKfycbw3h4ZkxAcvB_ox6_3OvW9iNTgFtAsuXqyaEsCBckK5_1yGHGGU3_9v8-P4M7D_wTDrlQ/exec";
 
+window.selectedPartyFilter = null;
 const state = {
     data: [],
 };
@@ -118,7 +119,7 @@ function updatePartyTally(data) {
         const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
         const pct = (stat.seats / totalSeats) * 100;
         return `
-            <div class="tally-legend-item">
+            <div class="tally-legend-item" onclick="filterByParty('${escapeJsString(stat.party)}')" style="cursor: pointer; transition: all 0.2s; ${window.selectedPartyFilter === stat.party ? 'background: rgba(255,255,255,0.1); border-color: var(--accent);' : ''}">
                 <span class="party-badge ${partyClass}">${escapeHtml(stat.party)}</span>
                 <strong style="color: #fff; font-size: 14px;">${stat.seats} ${stat.seats === 1 ? 'Seat' : 'Seats'}</strong>
                 <span style="color: var(--muted); font-size: 12px;">(${pct.toFixed(1)}%)</span>
@@ -140,7 +141,7 @@ function updatePartyTally(data) {
     `;
 }
 
-function updateSummary(data) {
+function updateSummary(data, fullDataForTally = null) {
     elements.zoneCount.textContent = formatter.format(uniqueValues(data, "zone").length);
     elements.lokSabhaCount.textContent = formatter.format(uniqueValues(data, "loksabha").length);
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
@@ -160,7 +161,7 @@ function updateSummary(data) {
         elements.topPartyStat.textContent = "--";
     }
 
-    updatePartyTally(data);
+    updatePartyTally(fullDataForTally || data);
 }
 
 function parseCandidates(details = "") {
@@ -518,7 +519,7 @@ function renderDashboard() {
         );
         if (row) {
             renderSingleAssembly(row);
-            updateSummary(filteredData);
+            updateSummary(filteredData, filteredData);
             return;
         }
     }
@@ -548,8 +549,16 @@ function renderDashboard() {
         filteredData.sort((a, b) => b.totalVotes - a.totalVotes);
     }
 
+    
+    const dataBeforePartyFilter = [...filteredData];
+    
+    if (window.selectedPartyFilter) {
+        filteredData = filteredData.filter(row => row.winner && row.winner.party === window.selectedPartyFilter);
+    }
+    
     renderConstituenciesList(filteredData);
-    updateSummary(filteredData);
+    updateSummary(filteredData, dataBeforePartyFilter);
+
 }
 
 function resetSelect(select, placeholder) {
@@ -680,3 +689,12 @@ elements.sortBy.addEventListener("change", renderDashboard);
 document.getElementById("reset-filters").addEventListener("click", resetAllFilters);
 
 initDashboard();
+
+window.filterByParty = function(party) {
+    if (window.selectedPartyFilter === party) {
+        window.selectedPartyFilter = null;
+    } else {
+        window.selectedPartyFilter = party;
+    }
+    renderDashboard();
+};
