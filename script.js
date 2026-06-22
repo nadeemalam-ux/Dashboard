@@ -16,7 +16,7 @@ const elements = {
     zoneCount: document.getElementById("zoneCount"),
     lokSabhaCount: document.getElementById("lokSabhaCount"),
     assemblyCount: document.getElementById("assemblyCount"),
-    avgMarginStat: document.getElementById("avgMarginStat"),
+    totalVotesStat: document.getElementById("totalVotesStat"),
     topPartyStat: document.getElementById("topPartyStat"),
 };
 
@@ -212,9 +212,9 @@ function updateSummary(data, fullDataForTally = null) {
 
     if (data.length > 0) {
         const totalVotesCast = data.reduce((sum, item) => sum + (item.totalVotes || 0), 0);
-        elements.avgMarginStat.textContent = formatter.format(totalVotesCast);
+        elements.totalVotesStat.textContent = formatter.format(totalVotesCast);
     } else {
-        elements.avgMarginStat.textContent = "--";
+        elements.totalVotesStat.textContent = "--";
     }
 
     const partyStats = getPartyTally(data);
