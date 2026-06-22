@@ -433,7 +433,11 @@ function renderSingleAssembly(row) {
                 </p>
                 <h2 style="margin-top: 4px; font-size: clamp(20px, 3vw, 26px);">${escapeHtml(row.assembly)}</h2>
             </div>
-            <div class="margin-pill">Margin: ${formatter.format(margin)} votes</div>
+            <div style="text-align: right;">
+                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Total Votes</div>
+                <div style="font-size: 22px; font-weight: 800; color: var(--accent);">${formatter.format(totalVotes)}</div>
+                <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Margin: ${formatter.format(margin)}</div>
+            </div>
         </div>
         
         <div class="details-panel" style="margin-top: 0;">
@@ -499,6 +503,12 @@ function renderConstituenciesList(list) {
 
         const marginPct = (row.margin / maxMargin) * 100;
 
+        const winnerVotes = row.winner ? row.winner.votes : 0;
+        const runnerVotes = row.runner ? row.runner.votes : 0;
+        const rowTotalVotes = (row.totalVotes && row.totalVotes > 0) ? row.totalVotes : (winnerVotes + runnerVotes) || 1;
+        const winnerPct = ((winnerVotes / rowTotalVotes) * 100).toFixed(1);
+        const runnerPct = ((runnerVotes / rowTotalVotes) * 100).toFixed(1);
+
         return `
             <tr onclick="selectConstituency('${escapeJsString(row.zone)}', '${escapeJsString(row.loksabha)}', '${escapeJsString(row.assembly)}')" class="constituency-row">
                 <td data-label="Constituency">
@@ -506,28 +516,28 @@ function renderConstituenciesList(list) {
                     <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${escapeHtml(row.zone)} / ${escapeHtml(row.loksabha)}</div>
                 </td>
                 <td data-label="Winner">
-                    <div>
-                        <span class="party-badge ${winnerPartyClass}" style="padding: 2px 6px; font-size: 10px; margin-right: 4px;">${escapeHtml(winnerParty)}</span>
+                    <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                        <span class="party-badge ${winnerPartyClass}" style="padding: 2px 6px; font-size: 10px;">${escapeHtml(winnerParty)}</span>
                         <strong>${escapeHtml(winnerName)}</strong>
                     </div>
-                    <div style="margin-top: 4px;">
-                        <span class="caste-badge" style="margin-left: 0;">Caste: ${escapeHtml(winnerCaste)}</span>
+                    <div style="margin-top: 5px; display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:13px; font-weight:700; color:var(--winner);">${formatter.format(winnerVotes)}</span>
+                        <span style="font-size:12px; color:var(--muted);">${winnerPct}%</span>
                     </div>
                 </td>
                 <td data-label="Runner Up">
-                    <div>
-                        <span class="party-badge ${runnerPartyClass}" style="padding: 2px 6px; font-size: 10px; margin-right: 4px;">${escapeHtml(runnerParty)}</span>
+                    <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+                        <span class="party-badge ${runnerPartyClass}" style="padding: 2px 6px; font-size: 10px;">${escapeHtml(runnerParty)}</span>
                         <strong>${escapeHtml(runnerName)}</strong>
                     </div>
-                    <div style="margin-top: 4px;">
-                        <span class="caste-badge" style="margin-left: 0;">Caste: ${escapeHtml(runnerCaste)}</span>
+                    <div style="margin-top: 5px; display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:13px; font-weight:700; color:var(--runner);">${formatter.format(runnerVotes)}</span>
+                        <span style="font-size:12px; color:var(--muted);">${runnerPct}%</span>
                     </div>
                 </td>
-                <td data-label="Margin">
-                    <strong>${formatter.format(row.margin)}</strong>
-                    <div class="mini-margin-bar">
-                        <div class="mini-margin-fill ${winnerPartyClass}" style="width: ${marginPct}%"></div>
-                    </div>
+                <td data-label="Votes & %">
+                    <div style="font-size:13px; font-weight:700; color:#fff;">${formatter.format(rowTotalVotes)}</div>
+                    <div style="font-size:11px; color:var(--muted); margin-top:3px;">Margin: ${formatter.format(row.margin)}</div>
                 </td>
             </tr>
         `;
@@ -540,17 +550,33 @@ function renderConstituenciesList(list) {
         const lsData = state.loksabhaData.find(item => item.loksabhaName === selectedLS);
         if (lsData && lsData.winner.name !== 'Unknown') {
             const partyClass = `party-${lsData.winner.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+            const lsTotalVotes = lsData.winner.votes + lsData.runner.votes;
+            const lsWinnerPct = lsTotalVotes > 0 ? ((lsData.winner.votes / lsTotalVotes) * 100).toFixed(1) : '0.0';
+            const lsRunnerPct = lsTotalVotes > 0 ? ((lsData.runner.votes / lsTotalVotes) * 100).toFixed(1) : '0.0';
+            const runnerPartyClass = `party-${lsData.runner.party.toLowerCase().replace(/[^a-z]/g, '')}`;
             loksabhaCardHtml = `
-                <div class="loksabha-result-card" style="margin-bottom: 24px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; transition: all 0.3s;">
-                    <div>
-                        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px;">2024 Lok Sabha Result</div>
-                        <h2 style="font-size: 20px; color: var(--text); margin: 0 0 4px 0;">${escapeHtml(lsData.winner.name)}</h2>
-                        <div style="font-size: 14px; color: var(--muted);">${formatter.format(lsData.winner.votes)} votes</div>
+                <div class="loksabha-result-card" style="margin-bottom: 24px; padding: 18px 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;">
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight:800; margin-bottom: 12px;">🏛 2024 Lok Sabha Result</div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <span class="party-badge ${partyClass}" style="font-size: 11px; padding: 3px 8px; margin-bottom:6px; display:inline-block;">${escapeHtml(lsData.winner.party)}</span>
+                            <div style="font-size: 18px; font-weight:800; color: var(--text);">${escapeHtml(lsData.winner.name)}</div>
+                            <div style="margin-top:4px; display:flex; gap:10px; align-items:center;">
+                                <span style="font-size:15px; font-weight:700; color:var(--winner);">${formatter.format(lsData.winner.votes)}</span>
+                                <span style="font-size:13px; color:var(--muted);">${lsWinnerPct}%</span>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:11px; color:var(--muted); margin-bottom:6px;">Runner Up</div>
+                            <span class="party-badge ${runnerPartyClass}" style="font-size: 11px; padding: 3px 8px; margin-bottom:6px; display:inline-block;">${escapeHtml(lsData.runner.party)}</span>
+                            <div style="font-size: 15px; font-weight:700; color: var(--text);">${escapeHtml(lsData.runner.name)}</div>
+                            <div style="margin-top:4px; display:flex; gap:10px; align-items:center; justify-content:flex-end;">
+                                <span style="font-size:14px; font-weight:700; color:var(--runner);">${formatter.format(lsData.runner.votes)}</span>
+                                <span style="font-size:12px; color:var(--muted);">${lsRunnerPct}%</span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="text-align: right;">
-                        <span class="party-badge ${partyClass}" style="font-size: 16px; padding: 6px 12px; margin-bottom: 8px; display: inline-block;">${escapeHtml(lsData.winner.party)}</span>
-                        ${lsData.margin ? `<div style="font-size: 13px; color: var(--muted);">Margin: <span style="color: #fff;">${formatter.format(lsData.margin)}</span></div>` : ''}
-                    </div>
+                    <div style="margin-top:10px; font-size:12px; color:var(--muted);">Total votes: ${formatter.format(lsTotalVotes)} &nbsp;·&nbsp; Margin: ${formatter.format(lsData.margin)}</div>
                 </div>
             `;
         }
@@ -585,9 +611,9 @@ function renderConstituenciesList(list) {
                 <thead>
                     <tr>
                         <th>Constituency</th>
-                        <th>Winner (Leading Candidate)</th>
+                        <th>Winner</th>
                         <th>Runner Up</th>
-                        <th>Margin</th>
+                        <th>Votes & %</th>
                     </tr>
                 </thead>
                 <tbody>
