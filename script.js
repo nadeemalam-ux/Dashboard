@@ -424,7 +424,9 @@ function renderDashboard() {
 
     if (selectedAssembly) {
         const row = state.data.find(
-            item => item.zone === selectedZone && item.loksabha === selectedLS && item.assembly === selectedAssembly
+            item => (!selectedZone || item.zone === selectedZone) &&
+                    (!selectedLS || item.loksabha === selectedLS) &&
+                    item.assembly === selectedAssembly
         );
         if (row) {
             renderSingleAssembly(row);
@@ -467,35 +469,59 @@ function resetSelect(select, placeholder) {
     select.disabled = true;
 }
 
+function updateAssemblyDropdown() {
+    const zone = elements.zone.value;
+    const lokSabha = elements.lokSabha.value;
+    
+    if (lokSabha) {
+        let assemblyValues;
+        if (zone) {
+            assemblyValues = uniqueValues(
+                state.data.filter((item) => item.zone === zone && item.loksabha === lokSabha),
+                "assembly"
+            );
+        } else {
+            assemblyValues = uniqueValues(
+                state.data.filter((item) => item.loksabha === lokSabha),
+                "assembly"
+            );
+        }
+        fillSelect(elements.assembly, assemblyValues, "Select Assembly");
+        elements.assembly.disabled = false;
+    } else {
+        resetSelect(elements.assembly, "Select Assembly");
+    }
+}
+
 function handleZoneChange() {
     const zone = elements.zone.value;
-    resetSelect(elements.lokSabha, "Select Lok Sabha");
-    resetSelect(elements.assembly, "Select Assembly");
+    const currentLS = elements.lokSabha.value;
     
+    let lokSabhaValues;
     if (zone) {
-        const lokSabhaValues = uniqueValues(
+        lokSabhaValues = uniqueValues(
             state.data.filter((item) => item.zone === zone),
             "loksabha"
         );
-        fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
-        elements.lokSabha.disabled = false;
+    } else {
+        lokSabhaValues = uniqueValues(state.data, "loksabha");
     }
+    
+    fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
+    elements.lokSabha.disabled = false;
+    
+    if (currentLS && lokSabhaValues.includes(currentLS)) {
+        elements.lokSabha.value = currentLS;
+        updateAssemblyDropdown();
+    } else {
+        resetSelect(elements.assembly, "Select Assembly");
+    }
+    
     renderDashboard();
 }
 
 function handleLokSabhaChange() {
-    const zone = elements.zone.value;
-    const lokSabha = elements.lokSabha.value;
-    resetSelect(elements.assembly, "Select Assembly");
-
-    if (zone && lokSabha) {
-        const assemblyValues = uniqueValues(
-            state.data.filter((item) => item.zone === zone && item.loksabha === lokSabha),
-            "assembly"
-        );
-        fillSelect(elements.assembly, assemblyValues, "Select Assembly");
-        elements.assembly.disabled = false;
-    }
+    updateAssemblyDropdown();
     renderDashboard();
 }
 
@@ -536,6 +562,8 @@ async function initDashboard() {
         });
 
         fillSelect(elements.zone, uniqueValues(state.data, "zone"), "Select Zone");
+        fillSelect(elements.lokSabha, uniqueValues(state.data, "loksabha"), "Select Lok Sabha");
+        elements.lokSabha.disabled = false;
         renderDashboard();
     } catch (error) {
         setErrorState(error.message || "Please check your connection and try again.");
