@@ -436,7 +436,7 @@ function renderSingleAssembly(row) {
             <div style="text-align: right;">
                 <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Total Votes</div>
                 <div style="font-size: 22px; font-weight: 800; color: var(--accent);">${formatter.format(totalVotes)}</div>
-                <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Margin: ${formatter.format(margin)}</div>
+                <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">Winner leads by <span style="color:#f8fafc; font-weight:700;">${((margin / totalVotes) * 100).toFixed(1)}%</span></div>
             </div>
         </div>
         
@@ -514,6 +514,35 @@ function renderConstituenciesList(list) {
                 <td data-label="Constituency">
                     <strong style="font-size: 15px; color: #fff;">${escapeHtml(row.assembly)}</strong>
                     <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${escapeHtml(row.zone)} / ${escapeHtml(row.loksabha)}</div>
+                    <!-- Mobile card layout — hidden on desktop via CSS -->
+                    <div class="mobile-candidates-row">
+                        <div class="mobile-cand-card">
+                            <div class="mobile-cand-label winner">🏆 Winner</div>
+                            <div>
+                                <span class="party-badge ${winnerPartyClass}" style="padding:2px 6px;font-size:10px;margin-bottom:4px;display:inline-block;">${escapeHtml(winnerParty)}</span>
+                            </div>
+                            <div class="mobile-cand-name">${escapeHtml(winnerName)}</div>
+                            <div>
+                                <span class="mobile-cand-votes winner">${formatter.format(winnerVotes)}</span>
+                                <span class="mobile-cand-pct">${winnerPct}%</span>
+                            </div>
+                        </div>
+                        <div class="mobile-cand-card">
+                            <div class="mobile-cand-label runner">Runner Up</div>
+                            <div>
+                                <span class="party-badge ${runnerPartyClass}" style="padding:2px 6px;font-size:10px;margin-bottom:4px;display:inline-block;">${escapeHtml(runnerParty)}</span>
+                            </div>
+                            <div class="mobile-cand-name">${escapeHtml(runnerName)}</div>
+                            <div>
+                                <span class="mobile-cand-votes runner">${formatter.format(runnerVotes)}</span>
+                                <span class="mobile-cand-pct">${runnerPct}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mobile-total-row">
+                        <span style="color:var(--muted);">Total: <span>${formatter.format(rowTotalVotes)}</span></span>
+                        <span style="color:var(--muted);">Lead: <span style="color:var(--winner);">${((row.margin / rowTotalVotes) * 100).toFixed(1)}%</span></span>
+                    </div>
                 </td>
                 <td data-label="Winner">
                     <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
@@ -537,7 +566,7 @@ function renderConstituenciesList(list) {
                 </td>
                 <td data-label="Votes & %">
                     <div style="font-size:13px; font-weight:700; color:#fff;">${formatter.format(rowTotalVotes)}</div>
-                    <div style="font-size:11px; color:var(--muted); margin-top:3px;">Margin: ${formatter.format(row.margin)}</div>
+                    <div style="font-size:11px; color:var(--muted); margin-top:3px;">Lead: <span style="color:var(--winner); font-weight:700;">${((row.margin / rowTotalVotes) * 100).toFixed(1)}%</span></div>
                 </td>
             </tr>
         `;
@@ -576,7 +605,7 @@ function renderConstituenciesList(list) {
                             </div>
                         </div>
                     </div>
-                    <div style="margin-top:10px; font-size:12px; color:var(--muted);">Total votes: ${formatter.format(lsTotalVotes)} &nbsp;·&nbsp; Margin: ${formatter.format(lsData.margin)}</div>
+                    <div style="margin-top:10px; font-size:12px; color:var(--muted);">Total votes: ${formatter.format(lsTotalVotes)} &nbsp;·&nbsp; Lead: <span style="color:var(--winner); font-weight:700;">${((lsData.margin / lsTotalVotes) * 100).toFixed(1)}%</span></div>
                 </div>
             `;
         }

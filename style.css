@@ -1376,3 +1376,142 @@ select:disabled {
     }
 }
 
+
+/* ============================================================
+   MOBILE CARD TABLE — transforms table rows into stacked cards
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* Hide table chrome */
+    .constituency-table thead { display: none; }
+    .constituency-table,
+    .constituency-table tbody,
+    .constituency-table tr,
+    .constituency-table td {
+        display: block;
+        width: 100%;
+    }
+
+    /* Each row becomes a card */
+    .constituency-table tbody tr {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px !important;
+        margin-bottom: 12px;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        animation: fadeInUp 0.3s ease forwards;
+        opacity: 0;
+    }
+    .constituency-table tbody tr:hover,
+    .constituency-table tbody tr:active {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(251,191,36,0.3);
+        transform: none; /* no lift on mobile */
+    }
+
+    /* Remove cell borders inside the card */
+    .constituency-table td {
+        border-bottom: none !important;
+        padding: 0 !important;
+        white-space: normal !important;
+    }
+
+    /* Constituency name — big and bold at top */
+    .constituency-table td[data-label="Constituency"] {
+        margin-bottom: 10px;
+    }
+    .constituency-table td[data-label="Constituency"] strong {
+        font-size: 17px !important;
+        color: #fff;
+    }
+    .constituency-table td[data-label="Constituency"] div {
+        font-size: 11px !important;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    /* Winner + Runner Up — side by side mini-cards */
+    .mobile-candidates-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 10px 0 8px;
+    }
+    .mobile-cand-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255,255,255,0.07);
+    }
+    .mobile-cand-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 5px;
+    }
+    .mobile-cand-label.winner { color: var(--winner); }
+    .mobile-cand-label.runner { color: var(--runner); }
+    .mobile-cand-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
+    .mobile-cand-votes {
+        font-size: 14px;
+        font-weight: 800;
+    }
+    .mobile-cand-votes.winner { color: var(--winner); }
+    .mobile-cand-votes.runner { color: var(--runner); }
+    .mobile-cand-pct {
+        font-size: 11px;
+        color: var(--muted);
+        margin-left: 5px;
+    }
+
+    /* Total votes footer bar */
+    .mobile-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        font-size: 12px;
+        color: var(--muted);
+    }
+    .mobile-total-row span {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    /* Hide the default td cells on mobile — we render custom HTML instead */
+    .constituency-table td[data-label="Winner"],
+    .constituency-table td[data-label="Runner Up"],
+    .constituency-table td[data-label="Votes & %"] {
+        display: none !important;
+    }
+
+    /* Constituency table wrapper: remove rounded border on mobile */
+    .constituency-table-wrapper {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0;
+    }
+
+    /* Result card: no extra top padding so hero → content flows tight */
+    .result-card { padding: 14px 14px 100px !important; }
+
+    /* Single assembly result view: stack header */
+    .result-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Lok Sabha card on mobile */
+    .loksabha-result-card > div:last-child { text-align: left !important; }
+}
