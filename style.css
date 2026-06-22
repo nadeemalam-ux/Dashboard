@@ -48,7 +48,7 @@ body::before {
     background-size: 130%; /* CSS Crop */
     background-position: center 30%; /* Focus on the center/top where he is sitting */
     background-repeat: no-repeat;
-    opacity: 0.03; /* Very low opacity */
+    opacity: 0.1;
     z-index: -1;
     pointer-events: none;
     filter: sepia(30%) hue-rotate(-10deg) saturate(150%) contrast(120%) brightness(110%);
