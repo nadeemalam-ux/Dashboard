@@ -450,11 +450,35 @@ function renderConstituenciesList(list) {
         `;
     }).join("");
 
+    
+    let loksabhaCardHtml = '';
+    const selectedLS = elements.lokSabha.value;
+    if (selectedLS && state.loksabhaData) {
+        const lsData = state.loksabhaData.find(item => item.loksabhaName === selectedLS);
+        if (lsData && lsData.winner.name !== 'Unknown') {
+            const partyClass = `party-${lsData.winner.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+            loksabhaCardHtml = `
+                <div class="loksabha-result-card" style="margin-bottom: 24px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px;">2024 Lok Sabha Result</div>
+                        <h2 style="font-size: 20px; color: var(--text); margin: 0 0 4px 0;">${escapeHtml(lsData.winner.name)}</h2>
+                        <div style="font-size: 14px; color: var(--muted);">${formatter.format(lsData.winner.votes)} votes</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="party-badge ${partyClass}" style="font-size: 16px; padding: 6px 12px; margin-bottom: 8px; display: inline-block;">${escapeHtml(lsData.winner.party)}</span>
+                        ${lsData.margin ? `<div style="font-size: 13px; color: var(--muted);">Margin: <span style="color: #fff;">${formatter.format(lsData.margin)}</span></div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     elements.result.innerHTML = `
         <div class="list-results-header">
             <h3>Constituencies</h3>
             <span class="count-pill">${list.length} seats</span>
         </div>
+        ${loksabhaCardHtml}
         <div class="constituency-table-wrapper">
             <table class="constituency-table">
                 <thead>
@@ -638,7 +662,40 @@ async function initDashboard() {
 
         const rawData = await response.json();
 
-        state.data = rawData.map(row => {
+        const assemblyRaw = rawData.assembly || (Array.isArray(rawData) ? rawData : []);
+        const loksabhaRaw = rawData.loksabha || [];
+
+        state.loksabhaData = loksabhaRaw.map(row => {
+            const segments = (row.loksabha || "").split('|');
+            let winner = { name: 'Unknown', party: 'IND', votes: 0 };
+            let runner = { name: 'Unknown', party: 'IND', votes: 0 };
+            
+            for (const seg of segments) {
+                const s = seg.trim();
+                const match = s.match(/([^(]+)\s*\(([^)]+)\)\s*([\d,]+)/);
+                if (match) {
+                    const nameParts = match[1].split(':');
+                    const name = nameParts[nameParts.length - 1].trim();
+                    const party = match[2].trim();
+                    const votes = parseInt(match[3].replace(/,/g, ''), 10) || 0;
+                    
+                    if (s.toLowerCase().includes('winner') || s.toLowerCase().startsWith('w:')) {
+                        winner = { name, party, votes };
+                    } else if (s.toLowerCase().includes('runner') || s.toLowerCase().startsWith('r:')) {
+                        runner = { name, party, votes };
+                    }
+                }
+            }
+            
+            return {
+                loksabhaName: row.zone,
+                winner,
+                runner,
+                margin: Math.abs(winner.votes - runner.votes)
+            };
+        });
+
+        state.data = assemblyRaw.map(row => {
             const candidates = parseCandidates(row.details);
             const winner = candidates.find(c => c.label === 'Winner') || candidates[0] || null;
             const runner = candidates.find(c => c.label === 'Runner Up') || candidates[1] || null;
