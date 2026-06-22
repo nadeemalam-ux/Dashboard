@@ -657,6 +657,7 @@ select:disabled {
 .party-ljp { background-color: #be123c; border-color: rgba(255,255,255,0.2); }
 .party-ham { background-color: #a21caf; border-color: rgba(255,255,255,0.2); }
 .party-cpiml { background-color: #dc2626; border-color: rgba(255,255,255,0.2); }
+.party-cpim { background-color: #ef4444; border-color: rgba(255,255,255,0.2); }
 .party-rlm { background-color: #4f46e5; border-color: rgba(255,255,255,0.2); }
 .party-vsip { background-color: #0891b2; border-color: rgba(255,255,255,0.2); }
 .party-bsp { background-color: #1d4ed8; border-color: rgba(255,255,255,0.2); }
@@ -695,6 +696,7 @@ select:disabled {
 .mini-margin-fill.party-ljp { background: #be123c; }
 .mini-margin-fill.party-ham { background: #a21caf; }
 .mini-margin-fill.party-cpiml { background: #dc2626; }
+.mini-margin-fill.party-cpim { background: #ef4444; }
 .mini-margin-fill.party-rlm { background: #4f46e5; }
 .mini-margin-fill.party-vsip { background: #0891b2; }
 .mini-margin-fill.party-bsp { background: #1d4ed8; }
@@ -856,6 +858,7 @@ select:disabled {
 .standing-fill.party-ljp { background: linear-gradient(90deg, #9f1239, #be123c); }
 .standing-fill.party-ham { background: linear-gradient(90deg, #86198f, #a21caf); }
 .standing-fill.party-cpiml { background: linear-gradient(90deg, #b91c1c, #dc2626); }
+.standing-fill.party-cpim { background: linear-gradient(90deg, #b91c1c, #ef4444); }
 .standing-fill.party-rlm { background: linear-gradient(90deg, #4338ca, #4f46e5); }
 .standing-fill.party-vsip { background: linear-gradient(90deg, #0e7490, #0891b2); }
 .standing-fill.party-bsp { background: linear-gradient(90deg, #1e40af, #1d4ed8); }

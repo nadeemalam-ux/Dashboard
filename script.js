@@ -202,7 +202,7 @@ function parseCandidates(details = "") {
     }
     if (current) candidates.push(current);
 
-    const knownParties = ['iip', 'rjd', 'jdu', 'bjp', 'jsp', 'inc', 'aimim', 'ind', 'vip', 'ham', 'cpi-ml', 'rlm', 'vsip', 'bsp', 'ppi', 'ljp-r', 'ljp', 'janata dal (united)', 'rashtriya janata dal', 'bharatiya janata party', 'jan suraaj party', 'indian national congress', 'independent'];
+    const knownParties = ['iip', 'cpi-m', 'rjd', 'jdu', 'bjp', 'jsp', 'inc', 'aimim', 'ind', 'vip', 'ham', 'cpi-ml', 'rlm', 'vsip', 'bsp', 'ppi', 'ljp-r', 'ljp', 'janata dal (united)', 'rashtriya janata dal', 'bharatiya janata party', 'jan suraaj party', 'indian national congress', 'independent'];
     const partyAliases = {
         'jsp0': 'JSP',
         'ind.': 'IND',
