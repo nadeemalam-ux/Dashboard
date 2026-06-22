@@ -16,7 +16,7 @@ const elements = {
     zoneCount: document.getElementById("zoneCount"),
     lokSabhaCount: document.getElementById("lokSabhaCount"),
     assemblyCount: document.getElementById("assemblyCount"),
-    totalVotesStat: document.getElementById("totalVotesStat"),
+    totalPartiesStat: document.getElementById("totalPartiesStat"),
     topPartyStat: document.getElementById("topPartyStat"),
 };
 
@@ -211,10 +211,15 @@ function updateSummary(data, fullDataForTally = null) {
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
 
     if (data.length > 0) {
-        const totalVotesCast = data.reduce((sum, item) => sum + (item.totalVotes || 0), 0);
-        elements.totalVotesStat.textContent = formatter.format(totalVotesCast);
+        const uniqueParties = new Set();
+        data.forEach(row => {
+            if (row.candidates) {
+                row.candidates.forEach(c => uniqueParties.add(c.party));
+            }
+        });
+        elements.totalPartiesStat.textContent = formatter.format(uniqueParties.size);
     } else {
-        elements.totalVotesStat.textContent = "--";
+        elements.totalPartiesStat.textContent = "--";
     }
 
     const partyStats = getPartyTally(data);
