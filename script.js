@@ -61,6 +61,25 @@ function setLoading() {
             <p>Loading Bihar election data...</p>
         </div>
     `;
+
+    // Attach custom tooltip logic
+    const segments = document.querySelectorAll('.tally-bar-segment');
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        segments.forEach(segment => {
+            segment.addEventListener('mouseenter', (e) => {
+                tooltip.innerHTML = e.target.getAttribute('data-tooltip');
+                tooltip.classList.add('visible');
+            });
+            segment.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.clientX + 'px';
+                tooltip.style.top = (e.clientY - 40) + 'px';
+            });
+            segment.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 }
 
 function setErrorState(message) {
@@ -70,6 +89,25 @@ function setErrorState(message) {
             <p>${escapeHtml(message)}</p>
         </div>
     `;
+
+    // Attach custom tooltip logic
+    const segments = document.querySelectorAll('.tally-bar-segment');
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        segments.forEach(segment => {
+            segment.addEventListener('mouseenter', (e) => {
+                tooltip.innerHTML = e.target.getAttribute('data-tooltip');
+                tooltip.classList.add('visible');
+            });
+            segment.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.clientX + 'px';
+                tooltip.style.top = (e.clientY - 40) + 'px';
+            });
+            segment.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 }
 
 function getPartyTally(data) {
@@ -112,7 +150,7 @@ function updatePartyTally(data) {
     const barSegments = partyStats.map(stat => {
         const pct = (stat.seats / totalSeats) * 100;
         const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
-        return `<div class="tally-bar-segment ${partyClass}" style="width: ${pct}%" title="${escapeHtml(stat.party)}: ${stat.seats} seats (${pct.toFixed(1)}%)"></div>`;
+        return `<div class="tally-bar-segment ${partyClass}" style="width: ${pct}%" data-tooltip="${escapeHtml(stat.party)}: <strong style='color:var(--accent)'>${stat.seats} seats</strong> (${pct.toFixed(1)}%)"></div>`;
     }).join("");
 
     const legendItems = partyStats.map(stat => {
@@ -139,6 +177,25 @@ function updatePartyTally(data) {
             ${legendItems}
         </div>
     `;
+
+    // Attach custom tooltip logic
+    const segments = document.querySelectorAll('.tally-bar-segment');
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        segments.forEach(segment => {
+            segment.addEventListener('mouseenter', (e) => {
+                tooltip.innerHTML = e.target.getAttribute('data-tooltip');
+                tooltip.classList.add('visible');
+            });
+            segment.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.clientX + 'px';
+                tooltip.style.top = (e.clientY - 40) + 'px';
+            });
+            segment.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 }
 
 function updateSummary(data, fullDataForTally = null) {
@@ -388,6 +445,25 @@ function renderSingleAssembly(row) {
             <pre>${escapeHtml(row.details)}</pre>
         </div>
     `;
+
+    // Attach custom tooltip logic
+    const segments = document.querySelectorAll('.tally-bar-segment');
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        segments.forEach(segment => {
+            segment.addEventListener('mouseenter', (e) => {
+                tooltip.innerHTML = e.target.getAttribute('data-tooltip');
+                tooltip.classList.add('visible');
+            });
+            segment.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.clientX + 'px';
+                tooltip.style.top = (e.clientY - 40) + 'px';
+            });
+            segment.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 }
 
 function renderConstituenciesList(list) {
@@ -473,6 +549,24 @@ function renderConstituenciesList(list) {
         }
     }
 
+    
+    if (list.length === 0) {
+        elements.result.innerHTML = `
+            <div class="list-results-header">
+                <h3>Constituencies</h3>
+                <span class="count-pill">0 seats</span>
+            </div>
+            ${loksabhaCardHtml}
+            <div class="empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <h3>No results found</h3>
+                <p>We couldn't find any constituencies matching your filters or search.</p>
+                <button class="reset-btn" onclick="resetFilters()" style="margin-top: 16px;">Clear Filters</button>
+            </div>
+        `;
+        return;
+    }
+
     elements.result.innerHTML = `
         <div class="list-results-header">
             <h3>Constituencies</h3>
@@ -495,6 +589,25 @@ function renderConstituenciesList(list) {
             </table>
         </div>
     `;
+
+    // Attach custom tooltip logic
+    const segments = document.querySelectorAll('.tally-bar-segment');
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) {
+        segments.forEach(segment => {
+            segment.addEventListener('mouseenter', (e) => {
+                tooltip.innerHTML = e.target.getAttribute('data-tooltip');
+                tooltip.classList.add('visible');
+            });
+            segment.addEventListener('mousemove', (e) => {
+                tooltip.style.left = e.clientX + 'px';
+                tooltip.style.top = (e.clientY - 40) + 'px';
+            });
+            segment.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+        });
+    }
 }
 
 window.selectConstituency = function (zone, loksabha, assembly) {

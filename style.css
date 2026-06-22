@@ -894,3 +894,108 @@ select:disabled {
     border-color: rgba(255, 255, 255, 0.12);
 }
 
+
+
+/* --- NEW UX/UI ENHANCEMENTS --- */
+
+/* 1. Sticky Filters */
+.filters {
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+/* 2. Search Field X Button */
+.search-field {
+    position: relative;
+}
+.search-field .clear-search {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: none;
+    transition: color 0.2s;
+}
+.search-field .clear-search:hover {
+    color: var(--accent);
+}
+.search-field input:focus + .clear-search,
+.search-field input:not(:placeholder-shown) + .clear-search {
+    display: block;
+}
+
+/* 3. Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+.empty-state svg {
+    margin-bottom: 16px;
+    color: var(--muted);
+}
+.empty-state h3 {
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+.empty-state p {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* 4. Custom Tooltip */
+#custom-tooltip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 1000;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+#custom-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+}
+.tally-bar-segment {
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+.tally-bar-segment:hover {
+    transform: scaleY(1.2);
+    filter: brightness(1.2);
+    z-index: 2;
+}
+
+/* 5. Staggered Entrance Animation for Table Rows */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.constituency-table tbody tr {
+    animation: fadeInUp 0.3s ease forwards;
+    opacity: 0;
+}
