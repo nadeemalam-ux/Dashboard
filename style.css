@@ -85,7 +85,7 @@ h1 {
 
 .hero-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
 }
 
@@ -128,8 +128,32 @@ h1 {
 
 .search-row {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1fr auto;
     gap: 14px;
+    align-items: end;
+}
+
+.reset-btn {
+    min-height: 52px;
+    padding: 0 24px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.reset-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.reset-btn:active {
+    transform: scale(0.95);
 }
 
 label {
@@ -369,7 +393,7 @@ select:disabled {
     }
 
     .hero-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .result-header,
@@ -743,3 +767,34 @@ select:disabled {
 .standing-fill.party-vsip { background: linear-gradient(90deg, #0e7490, #0891b2); }
 .standing-fill.party-bsp { background: linear-gradient(90deg, #1e40af, #1d4ed8); }
 .standing-fill.party-ind { background: linear-gradient(90deg, #374151, #4b5563); }
+
+/* --- Tally Card Segment and Legend styling --- */
+.tally-bar-segment {
+    height: 100%;
+    transition: width 0.7s ease;
+}
+
+.tally-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.tally-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.tally-legend-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+

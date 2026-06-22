@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <script>
-        (function() {
+        (function () {
             const password = prompt("Enter Password");
-            if (password !== "JSPT2026") {
+            if (password !== "JSPT@2026") {
                 document.body.innerHTML = `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; text-align: center; padding: 20px;">
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 40px 60px; backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);">
@@ -35,6 +37,7 @@
                 <p class="eyebrow" style="color: var(--accent);">Bihar 2025 Assembly Election Portal • Jan Suraaj Edition</p>
                 <h1>Bihar Election Dashboard</h1>
                 <p class="hero-copy">Real-time analytical view: Track leading candidates, vote share, margin statistics, and detailed profiles of Bihar's assembly constituencies.</p>
+                <p class="hero-slogan" style="color: var(--accent); font-weight: 700; font-size: 13px; margin-top: 14px; border-left: 3px solid var(--accent); padding-left: 10px; font-family: 'Inter', sans-serif;">"सही लोग, सही सोच, सामूहिक प्रयास" <span style="color: var(--muted); font-weight: 500; font-size: 12px; display: block; margin-top: 2px;">(Right People, Right Thinking, Collective Effort)</span></p>
             </div>
             <div class="hero-stats" aria-label="Dashboard summary">
                 <article>
@@ -48,6 +51,14 @@
                 <article>
                     <span id="assemblyCount">--</span>
                     <p>Assemblies</p>
+                </article>
+                <article>
+                    <span id="avgMarginStat">--</span>
+                    <p>Avg Margin</p>
+                </article>
+                <article>
+                    <span id="topPartyStat">--</span>
+                    <p>Leading Party</p>
                 </article>
             </div>
         </section>
@@ -87,7 +98,15 @@
                         <option value="votes-desc">Highest Total Votes</option>
                     </select>
                 </label>
+                <div style="display: grid; gap: 8px;">
+                    <span style="opacity: 0; font-size: 13px; font-weight: 700; user-select: none;" aria-hidden="true">Reset</span>
+                    <button id="reset-filters" class="reset-btn">Reset</button>
+                </div>
             </div>
+        </section>
+
+        <section id="tally-section" class="tally-card glass-panel" style="display: none; padding: 24px; border-radius: 22px; margin-bottom: 22px;">
+            <!-- Dynamic party seat share progress bars and statistics -->
         </section>
 
         <section id="result" class="result-card glass-panel" aria-live="polite">
@@ -100,4 +119,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -15,6 +15,8 @@ const elements = {
     zoneCount: document.getElementById("zoneCount"),
     lokSabhaCount: document.getElementById("lokSabhaCount"),
     assemblyCount: document.getElementById("assemblyCount"),
+    avgMarginStat: document.getElementById("avgMarginStat"),
+    topPartyStat: document.getElementById("topPartyStat"),
 };
 
 const formatter = new Intl.NumberFormat("en-IN");
@@ -69,10 +71,96 @@ function setErrorState(message) {
     `;
 }
 
+function getPartyTally(data) {
+    const tally = {};
+    data.forEach(row => {
+        if (row.winner && row.winner.party) {
+            const party = row.winner.party;
+            if (!tally[party]) {
+                tally[party] = {
+                    seats: 0,
+                    totalMargin: 0
+                };
+            }
+            tally[party].seats += 1;
+            tally[party].totalMargin += row.margin || 0;
+        }
+    });
+    return Object.entries(tally)
+        .map(([party, stats]) => ({
+            party,
+            seats: stats.seats,
+            avgMargin: Math.round(stats.totalMargin / stats.seats)
+        }))
+        .sort((a, b) => b.seats - a.seats);
+}
+
+function updatePartyTally(data) {
+    const tallyContainer = document.getElementById("tally-section");
+    if (!tallyContainer) return;
+    
+    if (data.length === 0) {
+        tallyContainer.style.display = "none";
+        return;
+    }
+    
+    tallyContainer.style.display = "block";
+    const partyStats = getPartyTally(data);
+    const totalSeats = data.length;
+    
+    const barSegments = partyStats.map(stat => {
+        const pct = (stat.seats / totalSeats) * 100;
+        const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+        return `<div class="tally-bar-segment ${partyClass}" style="width: ${pct}%" title="${escapeHtml(stat.party)}: ${stat.seats} seats (${pct.toFixed(1)}%)"></div>`;
+    }).join("");
+    
+    const legendItems = partyStats.map(stat => {
+        const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
+        const pct = (stat.seats / totalSeats) * 100;
+        return `
+            <div class="tally-legend-item">
+                <span class="party-badge ${partyClass}">${escapeHtml(stat.party)}</span>
+                <strong style="color: #fff; font-size: 14px;">${stat.seats} ${stat.seats === 1 ? 'Seat' : 'Seats'}</strong>
+                <span style="color: var(--muted); font-size: 12px;">(${pct.toFixed(1)}%)</span>
+                <span style="color: rgba(255,255,255,0.4); font-size: 11px; margin-left: auto;">Avg Margin: ${formatter.format(stat.avgMargin)}</span>
+            </div>
+        `;
+    }).join("");
+    
+    tallyContainer.innerHTML = `
+        <h3 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; font-weight: 700; color: var(--accent);">
+            Party Seat Share & Leads Tally
+        </h3>
+        <div class="tally-bar-container" style="height: 16px; display: flex; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,0.08); margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
+            ${barSegments}
+        </div>
+        <div class="tally-legend-grid">
+            ${legendItems}
+        </div>
+    `;
+}
+
 function updateSummary(data) {
     elements.zoneCount.textContent = formatter.format(uniqueValues(data, "zone").length);
     elements.lokSabhaCount.textContent = formatter.format(uniqueValues(data, "loksabha").length);
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
+    
+    if (data.length > 0) {
+        const totalMargin = data.reduce((sum, item) => sum + (item.margin || 0), 0);
+        const avgMargin = Math.round(totalMargin / data.length);
+        elements.avgMarginStat.textContent = formatter.format(avgMargin);
+    } else {
+        elements.avgMarginStat.textContent = "--";
+    }
+    
+    const partyStats = getPartyTally(data);
+    if (partyStats.length > 0) {
+        elements.topPartyStat.textContent = partyStats[0].party;
+    } else {
+        elements.topPartyStat.textContent = "--";
+    }
+    
+    updatePartyTally(data);
 }
 
 function parseCandidates(details = "") {
@@ -570,10 +658,25 @@ async function initDashboard() {
     }
 }
 
+function resetAllFilters() {
+    elements.zone.value = "";
+    elements.search.value = "";
+    elements.sortBy.value = "name";
+    
+    resetSelect(elements.lokSabha, "Select Lok Sabha");
+    fillSelect(elements.lokSabha, uniqueValues(state.data, "loksabha"), "Select Lok Sabha");
+    elements.lokSabha.disabled = false;
+    
+    resetSelect(elements.assembly, "Select Assembly");
+    
+    renderDashboard();
+}
+
 elements.zone.addEventListener("change", handleZoneChange);
 elements.lokSabha.addEventListener("change", handleLokSabhaChange);
 elements.assembly.addEventListener("change", handleAssemblyChange);
 elements.search.addEventListener("input", renderDashboard);
 elements.sortBy.addEventListener("change", renderDashboard);
+document.getElementById("reset-filters").addEventListener("click", resetAllFilters);
 
 initDashboard();
