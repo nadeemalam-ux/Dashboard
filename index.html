@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jan Suraaj - Bihar 2025 Election Dashboard</title>
+    <title>Bihar 2025 Election Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,31 +34,45 @@
     <main class="dashboard-shell">
         <section class="hero glass-panel">
             <div>
-                <p class="eyebrow" style="color: var(--accent);">Bihar 2025 Assembly Election Portal • Jan Suraaj Edition</p>
+                <p class="eyebrow" style="color: var(--accent);">Bihar 2025 Assembly Election Portal</p>
                 <h1>Bihar Election Dashboard</h1>
                 <p class="hero-copy">Real-time analytical view: Track leading candidates, vote share, margin statistics, and detailed profiles of Bihar's assembly constituencies.</p>
-                <p class="hero-slogan" style="color: var(--accent); font-weight: 700; font-size: 13px; margin-top: 14px; border-left: 3px solid var(--accent); padding-left: 10px; font-family: 'Inter', sans-serif;">"सही लोग, सही सोच, सामूहिक प्रयास" <span style="color: var(--muted); font-weight: 500; font-size: 12px; display: block; margin-top: 2px;">(Right People, Right Thinking, Collective Effort)</span></p>
             </div>
             <div class="hero-stats" aria-label="Dashboard summary">
                 <article>
-                    <span id="zoneCount">--</span>
-                    <p>Zones</p>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="stat-content">
+                        <span id="zoneCount">--</span>
+                        <p>Zones</p>
+                    </div>
                 </article>
                 <article>
-                    <span id="lokSabhaCount">--</span>
-                    <p>Lok Sabha</p>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="stat-content">
+                        <span id="lokSabhaCount">--</span>
+                        <p>Lok Sabha</p>
+                    </div>
                 </article>
                 <article>
-                    <span id="assemblyCount">--</span>
-                    <p>Assemblies</p>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div class="stat-content">
+                        <span id="assemblyCount">--</span>
+                        <p>Assemblies</p>
+                    </div>
                 </article>
                 <article>
-                    <span id="avgMarginStat">--</span>
-                    <p>Avg Margin</p>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                    <div class="stat-content">
+                        <span id="avgMarginStat">--</span>
+                        <p>Avg Margin</p>
+                    </div>
                 </article>
                 <article>
-                    <span id="topPartyStat">--</span>
-                    <p>Leading Party</p>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l6 6-6 6-6-6zM15.5 14.5l5.5 5.5"/></svg></div>
+                    <div class="stat-content">
+                        <span id="topPartyStat">--</span>
+                        <p>Leading Party</p>
+                    </div>
                 </article>
             </div>
         </section>

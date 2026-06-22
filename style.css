@@ -1,19 +1,20 @@
 :root {
-    --bg-start: #080c14;
-    --bg-mid: #111827;
-    --bg-end: #1e293b;
-    --surface: rgba(255, 255, 255, 0.05);
+    --bg-start: #09090b;
+    --bg-mid: #18181b;
+    --bg-end: #09090b;
+    --surface: rgba(255, 255, 255, 0.03);
     --surface-strong: rgba(255, 255, 255, 0.08);
-    --surface-soft: rgba(255, 255, 255, 0.02);
-    --border: rgba(255, 255, 255, 0.08);
+    --surface-soft: rgba(255, 255, 255, 0.01);
+    --border: rgba(255, 255, 255, 0.1);
     --text: #f8fafc;
-    --muted: #94a3b8;
-    --ink: #0f172a;
+    --muted: #a1a1aa;
+    --ink: #09090b;
     --winner: #10b981;
     --runner: #3b82f6;
-    --accent: #fbbf24; /* Jan Suraaj yellow */
+    --accent: #fbbf24;
     --danger: #ef4444;
-    --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --glow-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
 }
 
 * {
@@ -24,13 +25,33 @@
 
 body {
     min-height: 100vh;
-    font-family: Inter, Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     color: var(--text);
     background:
-        radial-gradient(circle at 12% 15%, rgba(251, 191, 36, 0.15), transparent 28%),
-        radial-gradient(circle at 84% 18%, rgba(16, 185, 129, 0.10), transparent 24%),
-        linear-gradient(135deg, var(--bg-start), var(--bg-mid) 48%, var(--bg-end));
+        radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.05), transparent 40%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+    background-attachment: fixed;
     padding: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('pk_rally_background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+    filter: grayscale(100%) contrast(120%) brightness(150%);
 }
 
 .dashboard-shell {
@@ -41,11 +62,17 @@ body {
 }
 
 .glass-panel {
-    background: var(--surface);
+    background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
     border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.glass-panel:hover {
+    box-shadow: var(--shadow), var(--glow-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .hero {
@@ -90,26 +117,67 @@ h1 {
 }
 
 .hero-stats article {
-    min-height: 90px;
-    border-radius: 14px;
-    padding: 12px;
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
+    min-height: 100px;
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.hero-stats article::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.hero-stats article:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.hero-stats article:hover::before {
+    opacity: 1;
+}
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.stat-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
 .hero-stats span {
-    font-size: clamp(20px, 3vw, 28px);
+    font-size: clamp(22px, 3.5vw, 32px);
     font-weight: 800;
+    background: linear-gradient(to right, #ffffff, #d1d5db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.1);
 }
 
 .hero-stats p {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .filters {
@@ -138,12 +206,13 @@ h1 {
     padding: 0 24px;
     border-radius: 14px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
     color: var(--text);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 .reset-btn:hover {
@@ -172,19 +241,22 @@ select, input[type="text"] {
     min-height: 52px;
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.88);
-    color: var(--ink);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text);
     font: inherit;
-    font-weight: 700;
+    font-weight: 600;
     padding: 0 16px;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
 }
 
 select:focus, input[type="text"]:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.24);
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15);
+    background: rgba(0, 0, 0, 0.4);
 }
+select option { background: #18181b; color: #fff; }
 
 select:disabled {
     cursor: not-allowed;
@@ -273,8 +345,10 @@ select:disabled {
 .candidate-card {
     border: 1px solid var(--border);
     border-radius: 22px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.13);
+    padding: 24px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .candidate-topline {
@@ -367,8 +441,35 @@ select:disabled {
 
 @media (max-width: 900px) {
     body {
-        padding: 18px;
-    }
+    min-height: 100vh;
+    font-family: 'Inter', Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.05), transparent 40%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+    background-attachment: fixed;
+    padding: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('pk_rally_background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+    filter: grayscale(100%) contrast(120%) brightness(150%);
+}
 
     .hero,
     .filters-row,
@@ -384,8 +485,35 @@ select:disabled {
 
 @media (max-width: 560px) {
     body {
-        padding: 12px;
-    }
+    min-height: 100vh;
+    font-family: 'Inter', Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(251, 191, 36, 0.05), transparent 40%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+    background-attachment: fixed;
+    padding: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('pk_rally_background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+    filter: grayscale(100%) contrast(120%) brightness(150%);
+}
 
     .hero,
     .result-card {
@@ -455,6 +583,8 @@ select:disabled {
 
 .constituency-table tbody tr:hover {
     background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .constituency-table tbody tr:active {
@@ -515,7 +645,12 @@ select:disabled {
 
 /* Candidate hover card transition */
 .candidate-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 24px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .candidate-card:hover {
@@ -560,11 +695,11 @@ select:disabled {
 
 /* Party Specific Colors */
 .party-bjp { background-color: #ff9933; border-color: rgba(255,255,255,0.2); }
-.party-rjd { background-color: #16a34a; border-color: rgba(255,255,255,0.2); } /* RJD green */
-.party-jdu { background-color: #0f766e; border-color: rgba(255,255,255,0.2); } /* JDU teal */
-.party-inc { background-color: #2563eb; border-color: rgba(255,255,255,0.2); } /* INC Blue */
+.party-rjd { background-color: #16a34a; border-color: rgba(255,255,255,0.2); } 
+.party-jdu { background-color: #0f766e; border-color: rgba(255,255,255,0.2); } 
+.party-inc { background-color: #2563eb; border-color: rgba(255,255,255,0.2); } 
 .party-aimim { background-color: #4c1d95; border-color: rgba(255,255,255,0.2); }
-.party-jsp { background-color: #eab308; color: #0f172a; border-color: rgba(0,0,0,0.1); } /* JSP Yellow */
+.party-jsp { background-color: #eab308; color: #0f172a; border-color: rgba(0,0,0,0.1); } 
 .party-ljpr { background-color: #e11d48; border-color: rgba(255,255,255,0.2); } /* LJP-R Red */
 .party-ljp { background-color: #be123c; border-color: rgba(255,255,255,0.2); }
 .party-ham { background-color: #a21caf; border-color: rgba(255,255,255,0.2); }
@@ -667,7 +802,10 @@ select:disabled {
 }
 
 .standing-row:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .standing-rank {
