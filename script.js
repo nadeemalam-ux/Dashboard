@@ -98,22 +98,22 @@ function getPartyTally(data) {
 function updatePartyTally(data) {
     const tallyContainer = document.getElementById("tally-section");
     if (!tallyContainer) return;
-    
+
     if (data.length === 0) {
         tallyContainer.style.display = "none";
         return;
     }
-    
+
     tallyContainer.style.display = "block";
     const partyStats = getPartyTally(data);
     const totalSeats = data.length;
-    
+
     const barSegments = partyStats.map(stat => {
         const pct = (stat.seats / totalSeats) * 100;
         const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
         return `<div class="tally-bar-segment ${partyClass}" style="width: ${pct}%" title="${escapeHtml(stat.party)}: ${stat.seats} seats (${pct.toFixed(1)}%)"></div>`;
     }).join("");
-    
+
     const legendItems = partyStats.map(stat => {
         const partyClass = `party-${stat.party.toLowerCase().replace(/[^a-z]/g, '')}`;
         const pct = (stat.seats / totalSeats) * 100;
@@ -126,7 +126,7 @@ function updatePartyTally(data) {
             </div>
         `;
     }).join("");
-    
+
     tallyContainer.innerHTML = `
         <h3 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; font-weight: 700; color: var(--accent);">
             Party Seat Share & Leads Tally
@@ -144,7 +144,7 @@ function updateSummary(data) {
     elements.zoneCount.textContent = formatter.format(uniqueValues(data, "zone").length);
     elements.lokSabhaCount.textContent = formatter.format(uniqueValues(data, "loksabha").length);
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
-    
+
     if (data.length > 0) {
         const totalMargin = data.reduce((sum, item) => sum + (item.margin || 0), 0);
         const avgMargin = Math.round(totalMargin / data.length);
@@ -152,14 +152,14 @@ function updateSummary(data) {
     } else {
         elements.avgMarginStat.textContent = "--";
     }
-    
+
     const partyStats = getPartyTally(data);
     if (partyStats.length > 0) {
         elements.topPartyStat.textContent = partyStats[0].party;
     } else {
         elements.topPartyStat.textContent = "--";
     }
-    
+
     updatePartyTally(data);
 }
 
@@ -201,7 +201,7 @@ function parseCandidates(details = "") {
     }
     if (current) candidates.push(current);
 
-    const knownParties = ['rjd', 'jdu', 'bjp', 'jsp', 'inc', 'aimim', 'ind', 'vip', 'ham', 'cpi-ml', 'rlm', 'vsip', 'bsp', 'ppi', 'ljp-r', 'ljp', 'janata dal (united)', 'rashtriya janata dal', 'bharatiya janata party', 'jan suraaj party', 'indian national congress', 'independent'];
+    const knownParties = ['iip', 'rjd', 'jdu', 'bjp', 'jsp', 'inc', 'aimim', 'ind', 'vip', 'ham', 'cpi-ml', 'rlm', 'vsip', 'bsp', 'ppi', 'ljp-r', 'ljp', 'janata dal (united)', 'rashtriya janata dal', 'bharatiya janata party', 'jan suraaj party', 'indian national congress', 'independent'];
     const partyAliases = {
         'jsp0': 'JSP',
         'ind.': 'IND',
@@ -216,7 +216,7 @@ function parseCandidates(details = "") {
 
     return candidates.map(cand => {
         let text = cand.raw.join(' ');
-        
+
         // Remove label
         text = text.replace(/^(mla|runner up|\d+(?:st|nd|rd|th)\s+runner\s+up)\s*[-–—:]?\s*/i, '').trim();
 
@@ -319,10 +319,10 @@ function parseCandidates(details = "") {
 
 function renderSingleAssembly(row) {
     const margin = row.margin;
-    
+
     // Sort candidates by votes descending and rank them
     const sortedCandidates = [...row.candidates].sort((a, b) => b.votes - a.votes);
-    
+
     // Calculate total votes and max votes for comparable bars
     const totalVotes = sortedCandidates.reduce((sum, c) => sum + c.votes, 0) || 1;
     const maxVotes = Math.max(...sortedCandidates.map(c => c.votes)) || 1;
@@ -332,7 +332,7 @@ function renderSingleAssembly(row) {
         const barWidth = (c.votes / maxVotes) * 100;
         const voteShare = (c.votes / totalVotes) * 100;
         const partyClass = `party-${c.party.toLowerCase().replace(/[^a-z]/g, '')}`;
-        
+
         let fillClass = 'other';
         if (rank === 1) fillClass = 'winner';
         else if (rank === 2) fillClass = 'runner';
@@ -472,9 +472,9 @@ function renderConstituenciesList(list) {
     `;
 }
 
-window.selectConstituency = function(zone, loksabha, assembly) {
+window.selectConstituency = function (zone, loksabha, assembly) {
     elements.zone.value = zone;
-    
+
     const lokSabhaValues = uniqueValues(
         state.data.filter((item) => item.zone === zone),
         "loksabha"
@@ -502,7 +502,7 @@ function renderDashboard() {
     const sortVal = elements.sortBy.value;
 
     let filteredData = state.data;
-    
+
     if (selectedZone) {
         filteredData = filteredData.filter(item => item.zone === selectedZone);
     }
@@ -513,8 +513,8 @@ function renderDashboard() {
     if (selectedAssembly) {
         const row = state.data.find(
             item => (!selectedZone || item.zone === selectedZone) &&
-                    (!selectedLS || item.loksabha === selectedLS) &&
-                    item.assembly === selectedAssembly
+                (!selectedLS || item.loksabha === selectedLS) &&
+                item.assembly === selectedAssembly
         );
         if (row) {
             renderSingleAssembly(row);
@@ -528,8 +528,8 @@ function renderDashboard() {
             const matchName = row.assembly.toLowerCase().includes(searchQuery);
             const matchZone = row.zone.toLowerCase().includes(searchQuery);
             const matchLS = row.loksabha.toLowerCase().includes(searchQuery);
-            
-            const matchCandidates = row.candidates.some(c => 
+
+            const matchCandidates = row.candidates.some(c =>
                 c.name.toLowerCase().includes(searchQuery) ||
                 c.party.toLowerCase().includes(searchQuery) ||
                 c.caste.toLowerCase().includes(searchQuery)
@@ -560,7 +560,7 @@ function resetSelect(select, placeholder) {
 function updateAssemblyDropdown() {
     const zone = elements.zone.value;
     const lokSabha = elements.lokSabha.value;
-    
+
     if (lokSabha) {
         let assemblyValues;
         if (zone) {
@@ -584,7 +584,7 @@ function updateAssemblyDropdown() {
 function handleZoneChange() {
     const zone = elements.zone.value;
     const currentLS = elements.lokSabha.value;
-    
+
     let lokSabhaValues;
     if (zone) {
         lokSabhaValues = uniqueValues(
@@ -594,17 +594,17 @@ function handleZoneChange() {
     } else {
         lokSabhaValues = uniqueValues(state.data, "loksabha");
     }
-    
+
     fillSelect(elements.lokSabha, lokSabhaValues, "Select Lok Sabha");
     elements.lokSabha.disabled = false;
-    
+
     if (currentLS && lokSabhaValues.includes(currentLS)) {
         elements.lokSabha.value = currentLS;
         updateAssemblyDropdown();
     } else {
         resetSelect(elements.assembly, "Select Assembly");
     }
-    
+
     renderDashboard();
 }
 
@@ -628,12 +628,12 @@ async function initDashboard() {
         }
 
         const rawData = await response.json();
-        
+
         state.data = rawData.map(row => {
             const candidates = parseCandidates(row.details);
             const winner = candidates.find(c => c.label === 'Winner') || candidates[0] || null;
             const runner = candidates.find(c => c.label === 'Runner Up') || candidates[1] || null;
-            
+
             const winnerVotes = winner ? winner.votes : 0;
             const runnerVotes = runner ? runner.votes : 0;
             const margin = Math.abs(winnerVotes - runnerVotes);
@@ -662,13 +662,13 @@ function resetAllFilters() {
     elements.zone.value = "";
     elements.search.value = "";
     elements.sortBy.value = "name";
-    
+
     resetSelect(elements.lokSabha, "Select Lok Sabha");
     fillSelect(elements.lokSabha, uniqueValues(state.data, "loksabha"), "Select Lok Sabha");
     elements.lokSabha.disabled = false;
-    
+
     resetSelect(elements.assembly, "Select Assembly");
-    
+
     renderDashboard();
 }
 
