@@ -868,3 +868,73 @@ window.filterByParty = function(party) {
     }
     renderDashboard();
 };
+
+// ── Mobile Filter Drawer ──────────────────────────────────────────
+(function () {
+    const fab     = document.getElementById('filterFab');
+    const panel   = document.getElementById('filtersPanel');
+    const overlay = document.getElementById('filterOverlay');
+    if (!fab || !panel || !overlay) return;
+
+    function openDrawer() {
+        panel.classList.add('drawer-open');
+        overlay.classList.add('visible');
+        fab.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+        panel.classList.remove('drawer-open');
+        overlay.classList.remove('visible');
+        fab.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    fab.addEventListener('click', () => {
+        panel.classList.contains('drawer-open') ? closeDrawer() : openDrawer();
+    });
+    overlay.addEventListener('click', closeDrawer);
+
+    // Close drawer when a filter changes on mobile
+    ['zone', 'ls', 'assembly', 'sortBy'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => {
+            if (window.innerWidth <= 768) closeDrawer();
+        });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeDrawer();
+    });
+})();
+
+// ── Search UX: clear button + keyboard shortcut ───────────────────
+(function () {
+    const clearBtn = document.getElementById('clearSearch');
+    const searchEl = elements.search;
+    if (clearBtn && searchEl) {
+        clearBtn.addEventListener('click', () => {
+            searchEl.value = '';
+            renderDashboard();
+            searchEl.focus();
+        });
+    }
+
+    document.addEventListener('keydown', e => {
+        if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) &&
+            document.activeElement !== searchEl &&
+            document.activeElement.tagName !== 'INPUT' &&
+            document.activeElement.tagName !== 'SELECT') {
+            e.preventDefault();
+            searchEl.focus();
+            if (window.innerWidth <= 768) {
+                const panel   = document.getElementById('filtersPanel');
+                const overlay = document.getElementById('filterOverlay');
+                const fab     = document.getElementById('filterFab');
+                if (panel)   panel.classList.add('drawer-open');
+                if (overlay) overlay.classList.add('visible');
+                if (fab)     fab.classList.add('open');
+            }
+        }
+    });
+})();

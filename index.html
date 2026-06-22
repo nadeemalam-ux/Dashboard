@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bihar 2025 Election Dashboard</title>
+    <meta name="description" content="Bihar 2025 Assembly Election Dashboard – Track leading candidates, vote share, margin statistics and detailed constituency profiles.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@
     <script>
         (function () {
             const password = prompt("Enter Password");
-            if (password !== "JSPT@2026") {
+            if (password !== "JSPT2026") {
                 document.body.innerHTML = `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; text-align: center; padding: 20px;">
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 40px 60px; backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);">
@@ -31,44 +32,74 @@
             }
         })();
     </script>
+
+    <!-- Mobile filter overlay (behind drawer) -->
+    <div class="filter-overlay" id="filterOverlay"></div>
+
     <main class="dashboard-shell">
+
+        <!-- HERO BAR — spans full width -->
         <section class="hero glass-panel">
             <div>
                 <p class="eyebrow" style="color: var(--accent);">Bihar 2025 Assembly Election Portal</p>
                 <h1>Bihar Election Dashboard</h1>
-                <p class="hero-copy">Real-time analytical view: Track leading candidates, vote share, margin statistics, and detailed profiles of Bihar's assembly constituencies.</p>
+                <p class="hero-copy">Real-time analytical view: Track leading candidates, vote share, margin statistics,
+                    and detailed profiles of Bihar's assembly constituencies.</p>
             </div>
             <div class="hero-stats" aria-label="Dashboard summary">
                 <article>
-                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg></div>
                     <div class="stat-content">
                         <span id="zoneCount">--</span>
                         <p>Zones</p>
                     </div>
                 </article>
                 <article>
-                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg></div>
                     <div class="stat-content">
                         <span id="lokSabhaCount">--</span>
                         <p>Lok Sabha</p>
                     </div>
                 </article>
                 <article>
-                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                        </svg></div>
                     <div class="stat-content">
                         <span id="assemblyCount">--</span>
                         <p>Assemblies</p>
                     </div>
                 </article>
                 <article>
-                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg></div>
                     <div class="stat-content">
                         <span id="avgMarginStat">--</span>
                         <p>Avg Margin</p>
                     </div>
                 </article>
                 <article>
-                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l6 6-6 6-6-6zM15.5 14.5l5.5 5.5"/></svg></div>
+                    <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l6 6-6 6-6-6zM15.5 14.5l5.5 5.5" />
+                        </svg></div>
                     <div class="stat-content">
                         <span id="topPartyStat">--</span>
                         <p>Leading Party</p>
@@ -77,7 +108,10 @@
             </div>
         </section>
 
-        <section class="filters glass-panel" aria-label="Election filters">
+        <!-- SIDEBAR FILTERS — left panel on desktop, bottom drawer on mobile -->
+        <section class="filters glass-panel" id="filtersPanel" aria-label="Election filters">
+            <div class="filter-panel-title">🔍 Filter & Search</div>
+
             <div class="filters-row">
                 <label>
                     <span>Zone</span>
@@ -98,10 +132,12 @@
                     </select>
                 </label>
             </div>
+
             <div class="search-row">
                 <label class="search-field">
-                    <span>Search Constituencies</span>
-                    <input type="text" id="search" placeholder="Search by name, candidate, party, or caste... (Press / to focus)">
+                    <span>Search</span>
+                    <input type="text" id="search"
+                        placeholder="Name, party, caste... (Press / to focus)">
                     <span class="clear-search" id="clearSearch" title="Clear search">✕</span>
                 </label>
                 <label class="sort-field">
@@ -113,27 +149,35 @@
                         <option value="votes-desc">Highest Total Votes</option>
                     </select>
                 </label>
-                <div style="display: grid; gap: 8px;">
-                    <span style="opacity: 0; font-size: 13px; font-weight: 700; user-select: none;" aria-hidden="true">Reset</span>
-                    <button id="reset-filters" class="reset-btn">Reset</button>
+                <button id="reset-filters" class="reset-btn">↺ Reset Filters</button>
+            </div>
+        </section>
+
+        <!-- MAIN CONTENT AREA — right col on desktop -->
+        <div class="main-col-wrapper">
+            <section id="tally-section" class="tally-card glass-panel"
+                style="display: none; padding: 24px; border-radius: 22px;">
+                <!-- Dynamic party seat share progress bars and statistics -->
+            </section>
+
+            <section id="result" class="result-card glass-panel" aria-live="polite">
+                <div class="loading-state">
+                    <span class="loader" aria-hidden="true"></span>
+                    <p>Loading election data...</p>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
-        <section id="tally-section" class="tally-card glass-panel" style="display: none; padding: 24px; border-radius: 22px; margin-bottom: 22px;">
-            <!-- Dynamic party seat share progress bars and statistics -->
-        </section>
-
-        <section id="result" class="result-card glass-panel" aria-live="polite">
-            <div class="loading-state">
-                <span class="loader" aria-hidden="true"></span>
-                <p>Loading election data...</p>
-            </div>
-        </section>
     </main>
 
-    <script src="script.js"></script>
+    <!-- Mobile FAB: floating action button to open filter drawer -->
+    <button class="filter-fab" id="filterFab" aria-label="Open Filters">
+        <span class="fab-open">⚙️</span>
+        <span class="fab-close">✕</span>
+    </button>
+
     <div id="custom-tooltip"></div>
+    <script src="script.js"></script>
 </body>
 
 </html>

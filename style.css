@@ -898,14 +898,9 @@ select:disabled {
 
 /* --- NEW UX/UI ENHANCEMENTS --- */
 
-/* 1. Sticky Filters */
+/* Filters: no sticky — scrolls with page for cleaner UX */
 .filters {
-    position: sticky;
-    top: 16px;
-    z-index: 100;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    position: static;
 }
 
 /* 2. Search Field X Button */
@@ -1001,75 +996,383 @@ select:disabled {
 }
 
 
-/* --- Mobile View Improvements --- */
+
+/* ============================================================
+   LAYOUT — Two-column sidebar + main for desktop
+   ============================================================ */
+
+/* Wrap everything in a two-col layout on desktop */
+.dashboard-shell {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+        "hero    hero"
+        "sidebar main"
+        "sidebar main";
+    gap: 20px;
+    align-items: start;
+}
+
+.hero         { grid-area: hero; }
+.filters      { grid-area: sidebar; align-self: start; }
+.tally-card   { grid-area: main; }
+.result-card  { grid-area: main; }
+
+/* Stack tally + result inside main area */
+.dashboard-shell > .tally-card,
+.dashboard-shell > .result-card {
+    grid-column: 2 / 3;
+}
+/* Make them stack vertically in that column */
+.main-col-wrapper {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+/* ============================================================
+   SIDEBAR / FILTERS — left panel redesign
+   ============================================================ */
+.filters {
+    border-radius: 22px;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: static; /* no sticky */
+}
+
+.filters .filter-panel-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.filters-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.search-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.reset-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 24px;
+    border-radius: 14px;
+    border: 1px solid rgba(251,191,36,0.4);
+    background: rgba(251,191,36,0.08);
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+}
+.reset-btn:hover {
+    background: rgba(251,191,36,0.18);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.reset-btn:active { transform: scale(0.97); }
+
+/* hide the invisible spacer span used for old grid alignment */
+.filters-row + .search-row > div > span[aria-hidden="true"],
+.search-row > div > span[aria-hidden="true"] {
+    display: none;
+}
+
+/* ============================================================
+   HERO — compact on desktop, full on mobile
+   ============================================================ */
+.hero {
+    min-height: auto;
+    padding: clamp(20px, 3vw, 30px);
+    gap: 24px;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+.hero-stats article {
+    min-height: 100px;
+    padding: 14px 10px;
+}
+
+/* ============================================================
+   MOBILE FILTER DRAWER
+   ============================================================ */
+
+/* Floating filter toggle button — mobile only */
+.filter-fab {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 200;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    border: none;
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.filter-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 32px rgba(251,191,36,0.65);
+}
+.filter-fab .fab-close { display: none; }
+.filter-fab.open .fab-open  { display: none; }
+.filter-fab.open .fab-close { display: inline; }
+
+/* Overlay */
+.filter-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 190;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.filter-overlay.visible {
+    opacity: 1;
+}
+
+/* ============================================================
+   TABLE improvements
+   ============================================================ */
+.list-results-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.list-results-header h3 {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+}
+.count-pill {
+    background: rgba(251,191,36,0.15);
+    border: 1px solid rgba(251,191,36,0.3);
+    color: var(--accent);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   RESPONSIVE — Tablet (< 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+    .dashboard-shell {
+        grid-template-columns: 280px 1fr;
+        gap: 16px;
+    }
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .hero-stats article:nth-child(4),
+    .hero-stats article:nth-child(5) {
+        /* Let them reflow naturally */
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile (< 768px)
+   Switches to single column, filter becomes a drawer
+   ============================================================ */
 @media (max-width: 768px) {
-    /* Hero Stats to 2-column grid instead of 1 huge column */
+    body {
+        padding: 0;
+    }
+
+    .dashboard-shell {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+        padding: 0;
+    }
+
+    /* Hero — top bar style */
+    .hero {
+        border-radius: 0 !important;
+        padding: 20px 16px;
+        gap: 16px;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        margin-bottom: 0;
+    }
+
+    h1 {
+        font-size: 22px !important;
+        line-height: 1.2;
+    }
+
+    .hero-copy {
+        display: none; /* hide long paragraph on mobile */
+    }
+
     .hero-stats {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
+        gap: 8px !important;
     }
-    /* Make the last odd item span 2 columns if needed, or just let it flow */
+
+    .hero-stats article:last-child {
+        grid-column: 1 / -1; /* span full width */
+    }
+
     .hero-stats article {
-        min-height: 90px !important;
-        padding: 10px !important;
+        min-height: 80px !important;
+        padding: 12px 10px !important;
+        border-radius: 12px !important;
     }
-    .hero-stats span {
-        font-size: 20px !important;
+
+    .hero-stats span { font-size: 20px !important; }
+    .hero-stats p    { font-size: 10px !important; }
+    .stat-icon { width: 28px !important; height: 28px !important; }
+    .stat-icon svg { width: 14px !important; height: 14px !important; }
+
+    /* Tally + result: full width, with page padding */
+    .tally-card,
+    .result-card {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        padding: 16px !important;
+        margin: 0 !important;
     }
-    .hero-stats p {
-        font-size: 11px !important;
-    }
-    .stat-icon {
-        width: 28px !important;
-        height: 28px !important;
-    }
-    .stat-icon svg {
-        width: 14px !important;
-        height: 14px !important;
-    }
-    
-    /* Filters to be compact */
+
+    /* DRAWER: filters slide up from bottom */
     .filters {
-        padding: 14px !important;
-        gap: 12px !important;
+        position: fixed !important;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 195;
+        border-radius: 24px 24px 0 0 !important;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 24px 20px 32px !important;
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        /* drag handle */
     }
+    .filters.drawer-open {
+        transform: translateY(0);
+    }
+    .filters::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 999px;
+        margin: 0 auto 20px;
+    }
+
     .filters-row {
-        gap: 10px !important;
+        gap: 12px;
     }
-    
-    /* Result card padding */
+    .search-row {
+        gap: 12px;
+    }
+
+    /* Show FAB on mobile */
+    .filter-fab {
+        display: flex;
+    }
+
+    /* Show overlay */
+    .filter-overlay {
+        display: block;
+    }
+
+    /* Table: horizontal scroll on mobile */
+    .constituency-table-wrapper {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+    .constituency-table th,
+    .constituency-table td {
+        padding: 12px 12px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    /* Lok Sabha result card stacks on mobile */
     .loksabha-result-card {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 12px !important;
         padding: 14px !important;
     }
-    .loksabha-result-card > div {
+    .loksabha-result-card > div:last-child {
         text-align: left !important;
-        width: 100% !important;
     }
-    
-    /* Table optimizations */
-    .constituency-table th, .constituency-table td {
-        padding: 12px 14px !important;
-        font-size: 13px !important;
-    }
-}
 
-@media (max-width: 480px) {
-    .hero-stats {
-        /* On very small phones, even 2 columns might be tight, but it's better than 1 */
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
+    /* Party tally legend: 2 col */
     .tally-legend-grid {
         grid-template-columns: 1fr 1fr !important;
         gap: 8px !important;
     }
     .tally-legend-item {
-        padding: 8px !important;
+        padding: 10px !important;
     }
-    .tally-legend-item .party-badge {
-        font-size: 10px !important;
-        padding: 2px 6px !important;
+
+    /* Bottom padding so FAB doesn't cover content */
+    .result-card {
+        padding-bottom: 100px !important;
     }
 }
+
+/* ============================================================
+   RESPONSIVE — Small phones (< 420px)
+   ============================================================ */
+@media (max-width: 420px) {
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .hero-stats article:last-child {
+        grid-column: 1 / -1;
+    }
+    .constituency-table th:nth-child(3),
+    .constituency-table td:nth-child(3) {
+        display: none; /* hide runner-up col on very small */
+    }
+}
+
