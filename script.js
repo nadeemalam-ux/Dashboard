@@ -23,7 +23,14 @@ const elements = {
 const formatter = new Intl.NumberFormat("en-IN");
 
 function uniqueValues(items, key) {
-    return [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
+    const vals = [...new Set(items.map((item) => item[key]).filter(Boolean))];
+    // Numeric-aware sort: if values start with a number (e.g. "1. Valmiki Nagar"), sort numerically
+    return vals.sort((a, b) => {
+        const numA = parseInt(a, 10);
+        const numB = parseInt(b, 10);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return a.localeCompare(b);
+    });
 }
 
 function escapeHtml(value = "") {
