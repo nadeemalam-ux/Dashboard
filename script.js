@@ -168,7 +168,7 @@ function updatePartyTally(data) {
                 <span class="party-badge ${partyClass}">${escapeHtml(stat.party)}</span>
                 <strong style="color: #fff; font-size: 14px;">${stat.seats} ${stat.seats === 1 ? 'Seat' : 'Seats'}</strong>
                 <span style="color: var(--muted); font-size: 12px;">(${pct.toFixed(1)}%)</span>
-                <span style="color: rgba(255,255,255,0.4); font-size: 11px; margin-left: auto;">Avg Margin: ${formatter.format(stat.avgMargin)}</span>
+                <span style="color: rgba(255,255,255,0.4); font-size: 11px; margin-left: auto;">Avg Lead: ${stat.avgLeadPct}%</span>
             </div>
         `;
     }).join("");
@@ -211,9 +211,8 @@ function updateSummary(data, fullDataForTally = null) {
     elements.assemblyCount.textContent = formatter.format(uniqueValues(data, "assembly").length);
 
     if (data.length > 0) {
-        const totalMargin = data.reduce((sum, item) => sum + (item.margin || 0), 0);
-        const avgMargin = Math.round(totalMargin / data.length);
-        elements.avgMarginStat.textContent = formatter.format(avgMargin);
+        const totalVotesCast = data.reduce((sum, item) => sum + (item.totalVotes || 0), 0);
+        elements.avgMarginStat.textContent = formatter.format(totalVotesCast);
     } else {
         elements.avgMarginStat.textContent = "--";
     }
