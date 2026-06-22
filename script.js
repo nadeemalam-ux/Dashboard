@@ -489,7 +489,7 @@ function renderConstituenciesList(list) {
 
     const maxMargin = Math.max(...list.map(r => r.margin)) || 1;
 
-    const tableRows = list.map(row => {
+    const tableRows = list.map((row, index) => {
         const winnerName = row.winner ? row.winner.name : 'N/A';
         const winnerParty = row.winner ? row.winner.party : 'IND';
         const winnerCaste = row.winner ? row.winner.caste : 'N/A';
@@ -507,9 +507,11 @@ function renderConstituenciesList(list) {
         const rowTotalVotes = (row.totalVotes && row.totalVotes > 0) ? row.totalVotes : (winnerVotes + runnerVotes) || 1;
         const winnerPct = ((winnerVotes / rowTotalVotes) * 100).toFixed(1);
         const runnerPct = ((runnerVotes / rowTotalVotes) * 100).toFixed(1);
+        
+        const delay = index < 20 ? (index * 0.03).toFixed(2) : 0; // Cap animation delay to first 20 rows
 
         return `
-            <tr onclick="selectConstituency('${escapeJsString(row.zone)}', '${escapeJsString(row.loksabha)}', '${escapeJsString(row.assembly)}')" class="constituency-row">
+            <tr onclick="selectConstituency('${escapeJsString(row.zone)}', '${escapeJsString(row.loksabha)}', '${escapeJsString(row.assembly)}')" class="constituency-row" style="animation-delay: ${delay}s">
                 <td data-label="Constituency">
                     <strong style="font-size: 15px; color: #fff;">${escapeHtml(row.assembly)}</strong>
                     <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${escapeHtml(row.zone)} / ${escapeHtml(row.loksabha)}</div>
