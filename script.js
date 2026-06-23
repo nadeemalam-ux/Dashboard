@@ -125,18 +125,20 @@ function getPartyTally(data) {
             if (!tally[party]) {
                 tally[party] = {
                     seats: 0,
-                    totalMargin: 0
+                    totalMargin: 0,
+                    totalVotes: 0
                 };
             }
             tally[party].seats += 1;
             tally[party].totalMargin += row.margin || 0;
+            tally[party].totalVotes += row.totalVotes || 0;
         }
     });
     return Object.entries(tally)
         .map(([party, stats]) => ({
             party,
             seats: stats.seats,
-            avgMargin: Math.round(stats.totalMargin / stats.seats)
+            avgLeadPct: stats.totalVotes > 0 ? ((stats.totalMargin / stats.totalVotes) * 100).toFixed(1) : "0.0"
         }))
         .sort((a, b) => b.seats - a.seats);
 }
